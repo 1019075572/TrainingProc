@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DayRecordsMapper">
+
+    <resultMap type="DayRecords" id="DayRecordsResult">
+        <result property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="recordDay" column="record_day"/>
+        <result property="recordId" column="record_id"/>
+        <result property="recordName" column="record_name"/>
+        <result property="workContent" column="work_content"/>
+        <result property="workResult" column="work_result"/>
+        <result property="workTomorrow" column="work_today"/>
+        <result property="content" column="content"/>
+        <result property="remark" column="remark"/>
+        <result property="addTime" column="add_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isdelete" column="isdelete"/>
+    </resultMap>
+
+    <sql id="selectDayRecordsVo">
+        select id, type, record_day, record_id, record_name, work_content, work_result, work_today, content, remark, add_time, update_time, isdelete from day_records
+    </sql>
+
+    <select id="selectDayRecordsList" parameterType="DayRecords" resultMap="DayRecordsResult">
+        <include refid="selectDayRecordsVo"/>
+        <where>
+            isdelete =0
+            <if test="type != null  and type != ''">and type = #{type}</if>
+            <if test="beginRecordDay != null and beginRecordDay != ''  ">
+                and record_day >CONCAT(#{beginRecordDay},' 00:00:00')
+            </if>
+
+            <if test="endRecordDay != null and endRecordDay != '' ">
+                and CONCAT(#{endRecordDay},' 23:59:59') > record_day
+            </if>
+
+            <if test="recordName != null  and recordName != ''">and record_name like concat('%', #{recordName}, '%')
+            </if>
+            <if test="workContent != null  and workContent != ''">and work_content like concat('%', #{workContent},
+                '%')
+            </if>
+            <if test="addTime != null ">and add_time = #{addTime}</if>
+        </where>
+        order by record_day desc
+    </select>
+
+    <select id="selectDayRecordsById" parameterType="String" resultMap="DayRecordsResult">
+        <include refid="selectDayRecordsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDayRecords" parameterType="DayRecords">
+        insert into day_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="type != null  and type != ''">type,</if>
+            <if test="recordDay != null ">record_day,</if>
+            <if test="recordId != null  and recordId != ''">record_id,</if>
+            <if test="recordName != null  and recordName != ''">record_name,</if>
+            <if test="workContent != null  and workContent != ''">work_content,</if>
+            <if test="workResult != null  and workResult != ''">work_result,</if>
+            <if test="workTomorrow != null  and workTomorrow != ''">work_today,</if>
+            <if test="content != null  and content != ''">content,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="addTime != null ">add_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="isdelete != null ">isdelete,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="type != null  and type != ''">#{type},</if>
+            <if test="recordDay != null ">#{recordDay},</if>
+            <if test="recordId != null  and recordId != ''">#{recordId},</if>
+            <if test="recordName != null  and recordName != ''">#{recordName},</if>
+            <if test="workContent != null  and workContent != ''">#{workContent},</if>
+            <if test="workResult != null  and workResult != ''">#{workResult},</if>
+            <if test="workTomorrow != null  and workTomorrow != ''">#{workTomorrow},</if>
+            <if test="content != null  and content != ''">#{content},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="addTime != null ">#{addTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="isdelete != null ">#{isdelete},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDayRecords" parameterType="DayRecords">
+        update day_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="recordDay != null ">record_day = #{recordDay},</if>
+            <if test="recordId != null  and recordId != ''">record_id = #{recordId},</if>
+            <if test="recordName != null  and recordName != ''">record_name = #{recordName},</if>
+            <if test="workContent != null  and workContent != ''">work_content = #{workContent},</if>
+            <if test="workResult != null  and workResult != ''">work_result = #{workResult},</if>
+            <if test="workTomorrow != null  and workTomorrow != ''">work_today = #{workTomorrow},</if>
+            <if test="content != null  and content != ''">content = #{content},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="addTime != null ">add_time = #{addTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="isdelete != null ">isdelete = #{isdelete},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDayRecordsById" parameterType="String">
+--         delete from day_records where id = #{id}
+        update day_records
+          set  isdelete = 1
+        where id = #{id}
+</delete>
+
+    <delete id="deleteDayRecordsByIds" parameterType="String">
+        -- delete from day_records where id in
+        <!--<foreach item="id" collection="array" open="(" separator="," close=")">-->
+        -- #{id}
+        <!--</foreach>-->
+        update day_records
+          set isdelete = 1
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

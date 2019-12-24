@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('小红箱列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>标题：</p>
+                                <input type="text" name="biaoti"/>
+                            </li>
+                            <li>
+                                <p>类型：</p>
+                                <select name="leixing" th:with="type=${@dict.getType('box_type')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <marquee width=100% scrollamount=10 direction=left,right bgcolor=#00FFCC	behavior=alternate> <a href="#" onclick="alert('你点我干嘛呢？')"><FONT face=楷体_GB2312 color=#ff0000 size=3><STRONG>小红箱等你哦！</a>　　　　　　<a href="#" onclick="alert('你点我干嘛呢？让我安安静静的跑不好么')">你可以表达你的意见或者意见哦！</FONT></STRONG></a> </marquee>
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:box:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="system:box:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:box:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:box:export">
+                    <i class="fa fa-download"></i> 导出
+                 </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('system:box:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('system:box:remove')}]];
+        var leixingDatas = [[${@dict.getType('box_type')}]];
+        var prefix = ctx + "system/box";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "小红箱",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'id',
+                    title : '编号',
+                    visible: false
+                },
+                {
+                    field : 'biaoti',
+                    title : '标题'
+                },
+                {
+                    field : 'leixing',
+                    title : '类型',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(leixingDatas, value);
+                    }
+                },
+                {
+                    field : 'neirong',
+                    title : '内容'
+                },
+                {
+                    field : 'remark',
+                    title : '备注信息'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

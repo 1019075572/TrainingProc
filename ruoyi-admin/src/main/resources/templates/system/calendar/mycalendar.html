@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: calendar('日程列表')" />
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content">
+    <div class="row animated fadeInDown">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Draggable Events</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="calendar.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="calendar.html#">选项1</a>
+                            </li>
+                            <li><a href="calendar.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id='external-events'>
+                        <p>可拖动的活动</p>
+                        <div class='external-event navy-bg'>确定活动目标</div>
+                        <div class='external-event navy-bg'>各部门职责及分工</div>
+                        <div class='external-event navy-bg'>案例分享</div>
+                        <div class='external-event navy-bg'>xxx</div>
+                        <p class="m-t">
+                            <input type='checkbox' id='drop-remove' class="i-checks" checked />
+                            <label for='drop-remove'>移动后删除</label>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h2>FullCalendar</h2> 这是一个jQuery插件，它提供了全尺寸，可拖动，使用Ajax的操作方式，并且可以使用自己的feed格式，如谷歌日历。
+                    <p>
+                        <a href="http://arshaw.com/fullcalendar/" target="_blank">FullCalendar开发文档</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>FullCalendar示例 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="calendar.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="calendar.html#">选项1</a>
+                            </li>
+                            <li><a href="calendar.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block th:include="include :: calendarfooter" />
+<script>
+    $(document).ready(function () {
+
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        /* initialize the external events
+         -----------------------------------------------------------------*/
+
+        $('#external-events div.external-event').each(function () {
+
+            // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+            // it doesn't need to have a start or end
+            var eventObject = {
+                title: $.trim($(this).text()) // use the element's text as the event title
+            };
+
+            // store the Event Object in the DOM element so we can get to it later
+            $(this).data('eventObject', eventObject);
+
+            // make the event draggable using jQuery UI
+            $(this).draggable({
+                zIndex: 999,
+                revert: true, // will cause the event to go back to its
+                revertDuration: 0 //  original position after the drag
+            });
+
+        });
+
+
+        /* initialize the calendar
+         -----------------------------------------------------------------*/
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            firstDay:1,//每行第一天为周一
+            editable: true,
+            droppable: true, // this allows things to be dropped onto the calendar !!!
+            drop: function (date, allDay,A,B,C) { // this function is called when something is dropped
+
+                // retrieve the dropped element's stored Event Object
+                var originalEventObject = $(this).data('eventObject');
+
+                // we need to copy it, so that multiple events don't have a reference to the same object
+                var copiedEventObject = $.extend({}, originalEventObject);
+
+                // assign it the date that was reported
+                copiedEventObject.start = date;
+                copiedEventObject.allDay = allDay;
+
+                var start, end;
+                if(C.name == "agendaWeek" || C.name == "agendaDay"){
+                    start = new Date(date);
+                    end = new Date(date);
+                    end.setHours(start.getHours()+2);
+                }else{
+                    start = new Date(date);
+                    end = new Date(date);
+                    end.setDate(start.getDate()+1);
+                }
+
+                // render the event on the calendar
+                // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+                $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+                console.log(date.format("YYYY-MM-DD HH:mm:ss"))
+                console.log(start.format("YYYY-MM-DD HH:mm:ss"))
+                console.log(end.format("YYYY-MM-DD HH:mm:ss"))
+
+                $.post("/system/calendar/add",{startString:start,endtime:end,title:$.trim($(this).text()),color:$(this).css("background-color")},function(result){
+                    if(result.code == 0){
+                        $('#calendar').fullCalendar('refetchEvents');
+                        $.modal.msgSuccess(result.msg);
+                    }else{
+                        layer.alert(result.msg);
+                    }
+                });
+
+
+                // is the "remove after drop" checkbox checked?
+                if ($('#drop-remove').is(':checked')) {
+                    // if so, remove the element from the "Draggable Events" list
+                    $(this).remove();
+                }
+
+            },
+            events: function (start, end, callback) {
+                $.ajax({
+                    url: '/system/calendar/findList',
+                    dataType: 'json',
+                    success: function(data) {
+                        callback(data)
+                    }
+                })
+            },
+            //单击事件项时触发
+            eventClick: function(calEvent, jsEvent, view) {
+                layer.open({
+                    type: 2,
+                    area: ['800px', '500px'],
+                    title: '事件',
+                    auto:true,
+                    maxmin: true, //开启最大化最小化按钮
+                    content: '/system/calendar/edit/'+calEvent.id ,
+                    btn: ['删除','确定', '关闭'],
+                    btn1:function(index,layero){
+                        var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.contentWindow.del(index, $('#calendar'));
+
+                    },
+                    btn2: function(index, layero){
+                        var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.contentWindow.save(index, $('#calendar'));
+                    },
+                    btn3: function(index){
+                        layer.close(index);
+                    }
+                });
+            },
+
+        });
+
+
+    });
+</script>
+</body>
+
+</html>

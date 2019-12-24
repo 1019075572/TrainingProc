@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('战力称号列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>称号：</p>
+                            <input type="text" name="chenghao"/>
+                        </li>
+                        <li>
+                            <p>类别：</p>
+                            <select name="leibie" th:with="type=${@dict.getType('yw_medal_leibie')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>等级：</p>
+                            <select name="dengji" th:with="type=${@dict.getType('yw_medal_dengji')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>标志：</p>
+                            <input type="text" name="biaozhi"/>
+                        </li>
+                        <li>
+                            <p>图片：</p>
+                            <input type="text" name="tupian"/>
+                        </li>
+                        <li>
+                            <p>备注：</p>
+                            <input type="text" name="beizhu"/>
+                        </li>
+                        <li>
+                            <p>通关分值：</p>
+                            <input type="text" name="fenduankaishi"/>
+                        </li>
+                        <li>
+                            <p>加持战力：</p>
+                            <input type="text" name="fenduanjieshu"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:medal:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="system:medal:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="system:medal:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:medal:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div id="left" class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+        <div id="right" class="panel panel-default col-sm-6" style="display:none">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a id="turnRight"><i class="fa fa-arrow-left"></i></a></button><label>任务列表，所属称号: </label><font id="jobLabel"></font><input type="hidden"
+                                                                                                    id="jobId"/> <div style="margin-top: 1px;">
+
+                </div></h3>
+
+            </div>
+            <div class="panel-body">
+                <div id="userToolbar">
+                    <button id="assignButton" class="btn btn-outline btn-primary" title="添加任务"><i
+                            class="fa fa-user-plus"></i> 添加任务
+                    </button>
+                </div>
+                <!-- 表格 -->
+                <table id="jobTable"
+                       data-toolbar="#userToolbar"
+                       data-id-field="id">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:medal:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:medal:remove')}]];
+    var leibieDatas = [[${@dict.getType('yw_medal_leibie')}]];
+    var dengjiDatas = [[${@dict.getType('yw_medal_dengji')}]];
+
+    var leixingDatas = [[${@dict.getType('yw_medal_job_leixing')}]];
+    var nanduDatas = [[${@dict.getType('yw_medal_job_nandu')}]];
+    var kuo1Datas = [[${@dict.getType('sys_content_status')}]];
+    var xiaohaotiliDatas = [[${@dict.getType('yw_medal_job_xiaohaotili')}]];
+
+    var prefix = ctx + "system/medal";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "战力称号",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '编号',
+                    visible: false
+                },
+                {
+                    field: 'chenghao',
+                    title: '称号'
+                },
+                {
+                    field: 'beizhu',
+                    title: '通关技能'
+                },
+                {
+                    field: 'leibie',
+                    title: '类别',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(leibieDatas, value);
+                    }
+                },
+                {
+                    field: 'dengji',
+                    title: '等级',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(dengjiDatas, value);
+                    }
+                },
+                {
+                    field: 'tupian',
+                    title: '图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(row.tupian);
+                    }
+                },
+                {
+                    field: 'fenduankaishi',
+                    title: '通关分值'
+                },
+                {
+                    field: 'fenduanjieshu',
+                    title: '加持战力'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+
+                    events: {
+                        'click .assign': function (e, value, row, index) {
+
+                            $("#left").attr("class", "col-sm-6");
+                            setTimeout(function () {
+                                $("#right").fadeIn(500);
+                            }, 500)
+                            $("#jobLabel").html(row.chenghao);
+                            $("#jobId").val(row.id);
+                            $('#jobTable').bootstrapTable("refresh", {query: {guishuchenghao: row.id}})
+                        }
+                    },
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a title="查看任务" class="' + editFlag + '" href="javascript:void(0)" onclick="$.modal.openTab(\'攻略任务\',\'/system/job/medal/' + row.id + '\');"><i class="fa fa-eye"></i></a> ');
+                        actions.push('<a title="新增任务" class="' + editFlag + '" href="javascript:void(0)" onclick="$.modal.open(\'添加称号任务\' , \'/system/job/add/' + row.id + '\')"><i class="fa fa-plus"></i></a> ');
+                        actions.push('<a title="编辑称号" class=" ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i></a> ');
+                        actions.push('<a title="删除称号" class=" ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-trash"></i></a>');
+                        actions.push('<a class="assign' + removeFlag + '" href="#" "><i class="fa fa-arrow-right"></i></a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+<script>
+
+    $(document).ready(function () {
+        $('#jobTable').bootstrapTable({
+            //请求方法
+            method: 'get',
+            dataType: "json",
+            //是否显示行间隔色
+            striped: true,
+            //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            cache: true,
+            //是否显示分页（*）
+            pagination: true,
+
+            pageList: [10, 25, 50, 100],
+            //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+            url: "/system/job/list",
+            //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+            //queryParamsType:'',
+            ////查询参数,每次调用是会带上这个参数，可自定义
+            //分页方式：client客户端分页，server服务端分页（*）
+            sidePagination: "server",
+            columns: [
+                {
+                    field: 'id',
+                    title: '编号',
+                    visible: false
+                },
+                {
+                    field: 'guishuchenghao',
+                    title: '归属称号',
+                    visible: false
+                },
+                {
+                    field: 'fenzhi',
+                    title: '分值'
+                },
+                {
+                    field: 'biaoti',
+                    title: '标题'
+                },
+                {
+                    field: 'neirong',
+                    title: '内容'
+                },
+                {
+                    field: 'leibie',
+                    title: '类别',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(leibieDatas, value);
+                    }
+                },
+                {
+                    field: 'leixing',
+                    title: '类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(leixingDatas, value);
+                    }
+                },
+                {
+                    field: 'nandu',
+                    title: '难度',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(nanduDatas, value);
+                    }
+                },
+                {
+                    field: 'tiaozhanshizhang',
+                    title: '挑战时长'
+                },
+                {
+                    field: 'xiaohaotili',
+                    title: '消耗体力',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(xiaohaotiliDatas, value);
+                    }
+                },
+                {
+                    field: 'kuo1',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(kuo1Datas, value);
+                    }
+
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.modal.open(\'修改称号任务\' , \'/system/job/edit/' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.submit(url, \'post\', \'json\', { \"ids\": ' + row.id + '\' });"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+
+        });
+
+        if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端
+            $('#jobTable').bootstrapTable("toggleView");
+        }
+
+
+        $("#assignButton").click(function () {
+            $.modal.open("添加称号任务", "/system/job/add/{id}".replace("{id}", $("#jobId").val()), 500, 600, function (index, layero) {
+                var iframeWin = layero.find('iframe')[0];
+                iframeWin.contentWindow.submitHandler(index, layero, function () {
+                    $("#jobTable").bootstrapTable("refresh", {query: {guishuchenghao: $("#jobId").val()}});
+                });
+
+            });
+        });
+
+        $("#turnRight").click(function () {
+            $("#left").attr("class", "col-sm-12");
+            $("#right").css("display", "none");
+        });
+    });
+
+</script>
+</body>
+</html>

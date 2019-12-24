@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('卡片列表')" />
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-4" th:each="obj:${list}" >
+                <div class="ibox" >
+                    <div class="ibox-title">
+                        <span class="label label-default pull-right">
+                            <img th:if="${objStat.index==0}" style="height: 25px;width: 25px;"  alt="[ 第一 ]" src="/paihang/leader_1.png" >
+                            <img th:if="${objStat.index==1}" style="height: 25px;width: 25px;"  alt="[ 第一 ]" src="/paihang/leader_2.png" >
+                            <img th:if="${objStat.index==2}" style="height: 25px;width: 25px;"  alt="[ 第一 ]" src="/paihang/leader_3.png" >
+                        </span>
+                        <h5 th:text="${obj.deptName}"></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h4 >[[${obj.userName}]]</h4>
+                        <img class="img-circle img-xs" th:src="${obj.avatar}">
+                        <p>
+                            [[${obj.remark}]]
+                        </p>
+                        <div>
+                            <span>当前项目进度：</span>
+                            <div class="stat-percent"> [[${obj.counts}]]%</div>
+                            <div class="progress progress-mini">
+                                <div th:style="'width:' + @{${obj.counts}}+'%'"  class="progress-bar"></div>
+                            </div>
+                        </div>
+                        <div class="row  m-t-sm">
+                            <div class="col-sm-4">
+                                <div class="font-bold">完成任务</div>
+                                [[${obj.counts}]] 个
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="font-bold">注册时间</div>
+                                [[${#dates.format(obj.createTime,'yyyy-MM-dd')}]]
+                            </div>
+                            <div class="col-sm-4 text-right">
+                                <div class="font-bold">总分</div>
+                                [[${obj.score}]] <i class="fa fa-level-up text-navy"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+</body>
+</html>

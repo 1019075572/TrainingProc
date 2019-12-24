@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增挑战称号记录')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-medalRecord-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">归属称号：</label>
+                <div class="col-sm-8">
+                    <input name="guishuchenghao" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">挑战时间：</label>
+                <div class="col-sm-8">
+                    <input name="tiaozhanshijian" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">挑战进度：</label>
+                <div class="col-sm-8">
+                    <input name="tiaozhanjindu" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">完成分值：</label>
+                <div class="col-sm-8">
+                    <input name="wanchengfenzhi" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">挑战者：</label>
+                <div class="col-sm-8">
+                    <input name="tiaozhanzhe" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">挑战评价：</label>
+                <div class="col-sm-8">
+                    <input name="tiaozhanpingjia" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">挑战时长：</label>
+                <div class="col-sm-8">
+                    <input name="tiaozhanshizhang" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">消耗体力：</label>
+                <div class="col-sm-8">
+                    <input name="xiaohaotili" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">扩1：</label>
+                <div class="col-sm-8">
+                    <input name="kuo1" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">扩2：</label>
+                <div class="col-sm-8">
+                    <input name="kuo2" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">扩3：</label>
+                <div class="col-sm-8">
+                    <input name="kuo3" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">扩4：</label>
+                <div class="col-sm-8">
+                    <input name="kuo4" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">扩5：</label>
+                <div class="col-sm-8">
+                    <input name="kuo5" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">扩6：</label>
+                <div class="col-sm-8">
+                    <input name="kuo6" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/medalRecord"
+        $("#form-medalRecord-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-medalRecord-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

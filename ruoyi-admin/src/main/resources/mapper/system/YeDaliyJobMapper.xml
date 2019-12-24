@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YeDaliyJobMapper">
+
+    <resultMap type="YeDaliyJob" id="YeDaliyJobResult">
+        <result property="id"    column="id"    />
+        <result property="riqi"    column="riqi"    />
+        <result property="biaoti"    column="biaoti"    />
+        <result property="gongzuomubiao"    column="gongzuomubiao"    />
+        <result property="wanchenggongzuo"    column="wanchenggongzuo"    />
+        <result property="weiwanchenggongzuo"    column="weiwanchenggongzuo"    />
+        <result property="gongzuojihua"    column="gongzuojihua"    />
+        <result property="xuyaoxiediaopeihegongzuo"    column="xuyaoxiediaopeihegongzuo"    />
+        <result property="beizhu"    column="beizhu"    />
+        <result property="tupian"    column="tupian"    />
+        <result property="shifouyuedu"    column="shifouyuedu"    />
+        <result property="shifoucaogao"    column="shifoucaogao"    />
+        <result property="huifuneirong"    column="huifuneirong"    />
+        <result property="huifuren"    column="huifuren"    />
+        <result property="leixing"    column="leixing"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="userName"    column="userName"    />
+    </resultMap>
+
+    <sql id="selectYeDaliyJobVo">
+        select dj.*,su.user_name as userName from ye_daliy_job dj left  join sys_user su on su.user_id = dj.create_by
+    </sql>
+
+    <select id="selectYeDaliyJobList" parameterType="YeDaliyJob" resultMap="YeDaliyJobResult">
+        <include refid="selectYeDaliyJobVo"/>
+        <where>
+            <if test="riqi != null  and riqi != ''"> and dj.riqi = #{riqi}</if>
+            <if test="biaoti != null  and biaoti != ''"> and dj.biaoti = #{biaoti}</if>
+            <if test="gongzuomubiao != null  and gongzuomubiao != ''"> and dj.gongzuomubiao = #{gongzuomubiao}</if>
+            <if test="wanchenggongzuo != null  and wanchenggongzuo != ''"> and dj.wanchenggongzuo = #{wanchenggongzuo}</if>
+            <if test="weiwanchenggongzuo != null  and weiwanchenggongzuo != ''"> and dj.weiwanchenggongzuo = #{weiwanchenggongzuo}</if>
+            <if test="gongzuojihua != null  and gongzuojihua != ''"> and dj.gongzuojihua = #{gongzuojihua}</if>
+            <if test="xuyaoxiediaopeihegongzuo != null  and xuyaoxiediaopeihegongzuo != ''"> and dj.xuyaoxiediaopeihegongzuo = #{xuyaoxiediaopeihegongzuo}</if>
+            <if test="beizhu != null  and beizhu != ''"> and dj.beizhu = #{beizhu}</if>
+            <if test="tupian != null  and tupian != ''"> and dj.tupian = #{tupian}</if>
+            <if test="shifouyuedu != null  and shifouyuedu != ''"> and dj.shifouyuedu = #{shifouyuedu}</if>
+            <if test="shifoucaogao != null  and shifoucaogao != ''"> and dj.shifoucaogao = #{shifoucaogao}</if>
+            <if test="huifuneirong != null  and huifuneirong != ''"> and dj.huifuneirong = #{huifuneirong}</if>
+            <if test="huifuren != null  and huifuren != ''"> and dj.huifuren = #{huifuren}</if>
+            <if test="leixing != null  and leixing != ''"> and dj.leixing = #{leixing}</if>
+            <if test="createBy != null  and createBy != ''"> and dj.create_by = #{createBy}</if>
+            <if test="params.beginRiqi != null and params.beginRiqi != ''"><!-- 开始时间检索 -->
+                and date_format(dj.riqi,'%y%m%d') &gt;= date_format(#{params.beginRiqi},'%y%m%d')
+            </if>
+            <if test="params.endRiqi != null and params.endRiqi != ''"><!-- 结束时间检索 -->
+                and date_format(dj.riqi,'%y%m%d') &lt;= date_format(#{params.endRiqi},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectYeDaliyJobById" parameterType="String" resultMap="YeDaliyJobResult">
+        <include refid="selectYeDaliyJobVo"/>
+        where dj.id = #{id}
+    </select>
+
+    <insert id="insertYeDaliyJob" parameterType="YeDaliyJob">
+        insert into ye_daliy_job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="riqi != null  and riqi != ''">riqi,</if>
+            <if test="biaoti != null  and biaoti != ''">biaoti,</if>
+            <if test="gongzuomubiao != null  and gongzuomubiao != ''">gongzuomubiao,</if>
+            <if test="wanchenggongzuo != null  and wanchenggongzuo != ''">wanchenggongzuo,</if>
+            <if test="weiwanchenggongzuo != null  and weiwanchenggongzuo != ''">weiwanchenggongzuo,</if>
+            <if test="gongzuojihua != null  and gongzuojihua != ''">gongzuojihua,</if>
+            <if test="xuyaoxiediaopeihegongzuo != null  and xuyaoxiediaopeihegongzuo != ''">xuyaoxiediaopeihegongzuo,</if>
+            <if test="beizhu != null  and beizhu != ''">beizhu,</if>
+            <if test="tupian != null  and tupian != ''">tupian,</if>
+            <if test="shifouyuedu != null  and shifouyuedu != ''">shifouyuedu,</if>
+            <if test="shifoucaogao != null  and shifoucaogao != ''">shifoucaogao,</if>
+            <if test="huifuneirong != null  and huifuneirong != ''">huifuneirong,</if>
+            <if test="huifuren != null  and huifuren != ''">huifuren,</if>
+            <if test="leixing != null  and leixing != ''">leixing,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="riqi != null  and riqi != ''">#{riqi},</if>
+            <if test="biaoti != null  and biaoti != ''">#{biaoti},</if>
+            <if test="gongzuomubiao != null  and gongzuomubiao != ''">#{gongzuomubiao},</if>
+            <if test="wanchenggongzuo != null  and wanchenggongzuo != ''">#{wanchenggongzuo},</if>
+            <if test="weiwanchenggongzuo != null  and weiwanchenggongzuo != ''">#{weiwanchenggongzuo},</if>
+            <if test="gongzuojihua != null  and gongzuojihua != ''">#{gongzuojihua},</if>
+            <if test="xuyaoxiediaopeihegongzuo != null  and xuyaoxiediaopeihegongzuo != ''">#{xuyaoxiediaopeihegongzuo},</if>
+            <if test="beizhu != null  and beizhu != ''">#{beizhu},</if>
+            <if test="tupian != null  and tupian != ''">#{tupian},</if>
+            <if test="shifouyuedu != null  and shifouyuedu != ''">#{shifouyuedu},</if>
+            <if test="shifoucaogao != null  and shifoucaogao != ''">#{shifoucaogao},</if>
+            <if test="huifuneirong != null  and huifuneirong != ''">#{huifuneirong},</if>
+            <if test="huifuren != null  and huifuren != ''">#{huifuren},</if>
+            <if test="leixing != null  and leixing != ''">#{leixing},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateYeDaliyJob" parameterType="YeDaliyJob">
+        update ye_daliy_job
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="riqi != null  and riqi != ''">riqi = #{riqi},</if>
+            <if test="biaoti != null  and biaoti != ''">biaoti = #{biaoti},</if>
+            <if test="gongzuomubiao != null  and gongzuomubiao != ''">gongzuomubiao = #{gongzuomubiao},</if>
+            <if test="wanchenggongzuo != null  and wanchenggongzuo != ''">wanchenggongzuo = #{wanchenggongzuo},</if>
+            <if test="weiwanchenggongzuo != null  and weiwanchenggongzuo != ''">weiwanchenggongzuo = #{weiwanchenggongzuo},</if>
+            <if test="gongzuojihua != null  and gongzuojihua != ''">gongzuojihua = #{gongzuojihua},</if>
+            <if test="xuyaoxiediaopeihegongzuo != null  and xuyaoxiediaopeihegongzuo != ''">xuyaoxiediaopeihegongzuo = #{xuyaoxiediaopeihegongzuo},</if>
+            <if test="beizhu != null  and beizhu != ''">beizhu = #{beizhu},</if>
+            <if test="tupian != null  and tupian != ''">tupian = #{tupian},</if>
+            <if test="shifouyuedu != null  and shifouyuedu != ''">shifouyuedu = #{shifouyuedu},</if>
+            <if test="shifoucaogao != null  and shifoucaogao != ''">shifoucaogao = #{shifoucaogao},</if>
+            <if test="huifuneirong != null  and huifuneirong != ''">huifuneirong = #{huifuneirong},</if>
+            <if test="huifuren != null  and huifuren != ''">huifuren = #{huifuren},</if>
+            <if test="leixing != null  and leixing != ''">leixing = #{leixing},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteYeDaliyJobById" parameterType="String">
+        delete from ye_daliy_job where id = #{id}
+    </delete>
+
+    <delete id="deleteYeDaliyJobByIds" parameterType="String">
+        delete from ye_daliy_job where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

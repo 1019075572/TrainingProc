@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增称号任务')" />
+    <th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-job-add">
+            <input name="guishuchenghao" class="form-control" type="hidden" th:value="${guishuchenghao}">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">分值：</label>
+                <div class="col-sm-8">
+                    <input name="fenzhi" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">标题：</label>
+                <div class="col-sm-8">
+                    <input name="biaoti" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">内容：</label>
+                <div class="col-sm-8">
+                    <input name="neirong" id="neirong"  class="form-control" type="hidden">
+                    <div id="editor" class="summernote"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">类别：</label>
+                <div class="col-sm-8">
+                    <select name="leibie" class="form-control m-b" th:with="type=${@dict.getType('yw_medal_job_leibie')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">类型：</label>
+                <div class="col-sm-8">
+                    <select name="leixing" class="form-control m-b" th:with="type=${@dict.getType('yw_medal_job_leixing')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">难度：</label>
+                <div class="col-sm-8">
+                    <select name="nandu" class="form-control m-b" th:with="type=${@dict.getType('yw_medal_job_nandu')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">挑战时长：</label>
+                <div class="col-sm-8">
+                    <input name="tiaozhanshizhang" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">消耗体力：</label>
+                <div class="col-sm-8">
+                    <select name="xiaohaotili" class="form-control m-b" th:with="type=${@dict.getType('yw_medal_job_xiaohaotili')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <label class="toggle-switch switch-solid">
+                        <input type="checkbox" id="status" checked>
+                        <input name="kuo1"  class="form-control" type="hidden">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/job"
+        $("#form-job-add").validate({
+            focusCleanup: true
+        });
+
+        $('.summernote').summernote({
+            placeholder: '请输入完成内容',
+            height : 192,
+            lang : 'zh-CN',
+            followingToolbar: false,
+            callbacks: {
+                onImageUpload: function (files) {
+                    sendFile(files[0], this);
+                }
+            }
+        });
+        var content = $("#neirong").val();
+        $('#editor').summernote('code', content);
+
+        // 上传文件
+        function sendFile(file, obj) {
+            var data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                type: "POST",
+                url: ctx + "common/upload",
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function(result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $(obj).summernote('editor.insertImage', result.url, result.fileName);
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                },
+                error: function(error) {
+                    $.modal.alertWarning("图片上传失败。");
+                }
+            });
+        }
+
+
+        function submitHandler(index,layero,calback) {
+            if ($.validate.form()) {
+                var sHTML = $('.summernote').summernote('code');
+                $("#neirong").val(sHTML);
+                var status = $("input[id='status']").is(':checked') == true ? 0 : 1;
+                $("#kuo1").val(status);
+                $.operate.save(prefix + "/add", $('#form-job-add').serialize(),calback);
+            }
+        }
+    </script>
+</body>
+</html>

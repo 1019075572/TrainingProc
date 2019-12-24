@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('挑战称号任务记录列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>任务编号：</p>
+                            <input type="text" name="renwubianhao"/>
+                        </li>
+                        <li>
+                            <p>挑战时间：</p>
+                            <input type="text" name="tiaozhanshijian"/>
+                        </li>
+                        <li>
+                            <p>挑战进度：</p>
+                            <input type="text" name="tiaozhanjindu"/>
+                        </li>
+                        <li>
+                            <p>完成分值：</p>
+                            <input type="text" name="wanchengfenzhi"/>
+                        </li>
+                        <li>
+                            <p>挑战者：</p>
+                            <input type="text" name="tiaozhanzhe"/>
+                        </li>
+                        <li>
+                            <p>挑战评价：</p>
+                            <input type="text" name="tiaozhanpingjia"/>
+                        </li>
+                        <li>
+                            <p>挑战时长：</p>
+                            <input type="text" name="tiaozhanshizhang"/>
+                        </li>
+                        <li>
+                            <p>消耗体力：</p>
+                            <input type="text" name="xiaohaotili"/>
+                        </li>
+                        <li>
+                            <p>扩1：</p>
+                            <input type="text" name="kuo1"/>
+                        </li>
+                        <li>
+                            <p>扩2：</p>
+                            <input type="text" name="kuo2"/>
+                        </li>
+                        <li>
+                            <p>扩3：</p>
+                            <input type="text" name="kuo3"/>
+                        </li>
+                        <li>
+                            <p>扩4：</p>
+                            <input type="text" name="kuo4"/>
+                        </li>
+                        <li>
+                            <p>扩5：</p>
+                            <input type="text" name="kuo5"/>
+                        </li>
+                        <li>
+                            <p>扩6：</p>
+                            <input type="text" name="kuo6"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:medalJobRecord:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="system:medalJobRecord:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="system:medalJobRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()"
+               shiro:hasPermission="system:medalJobRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:medalJobRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:medalJobRecord:remove')}]];
+    var kuo2Datas = [[${@dict.getType('ye_medal_job_jindu')}]];
+    var prefix = ctx + "system/medalJobRecord";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            showRemarkUrl: prefix + "/showRemark/{id}",
+            modalName: "挑战称号任务记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '编号',
+                    visible: false
+                },
+                {
+                    field: 'renwubianhao',
+                    title: '任务编号',
+                    visible: false
+                },
+                {
+                    field: 'renwubianhaoName',
+                    title: '任务名称'
+                },
+                {
+                    field: 'tiaozhanshijian',
+                    title: '开始时间'
+                },
+                {
+                    field: 'tiaozhanjindu',
+                    title: '挑战进度'
+                },
+                {
+                    field: 'wanchengfenzhi',
+                    title: '完成分值'
+                },
+                {
+                    field: 'tiaozhanzhe',
+                    title: '挑战者'
+                },
+                {
+                    field: 'tiaozhanpingjia',
+                    title: '挑战评价'
+                },
+                {
+                    field: 'tiaozhanshizhang',
+                    title: '完成时间'
+                },
+                {
+                    field: 'xiaohaotili',
+                    title: '消耗体力'
+                },
+                {
+                    field: 'kuo2',
+                    title: '完成情况',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(kuo2Datas, value);
+                    }
+                },
+                {
+                    field: 'kuo3',
+                    title: '评语'
+                },
+                {
+                    field: 'kuo4',
+                    title: '阅卷人'
+                },
+                {
+                    field: 'remark',
+                    title: '完成内容'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        if( row.kuo2 == '2' ) {
+                            actions.push('<a class="btn btn-success btn-xs " href="javascript:void(0)" onclick="showRemark(\'' + row.id + '\')"><i class="fa fa-edit"></i>评阅</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+<script>
+
+    function showRemark(id) {
+        $.modal.confirm("确定评阅该条" + $.table._option.modalName + "吗？", function () {
+            var url = $.common.isEmpty(id) ? $.table._option.showRemarkUrl : $.table._option.showRemarkUrl.replace("{id}", id);
+            if ($.table._option.type == table_type.bootstrapTable) {
+                // $.operate.get(url);
+                $.modal.open("阅卷！", url);
+            } else {
+                var data = {"ids": id};
+                $.operate.submit(url, "post", "json", data);
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YwMedalJobRecordMapper">
+
+    <resultMap type="YwMedalJobRecord" id="YwMedalJobRecordResult">
+        <result property="id"    column="id"    />
+        <result property="renwubianhao"    column="renwubianhao"    />
+        <result property="renwubianhaoName"    column="renwubianhaoName"    />
+        <result property="tiaozhanshijian"    column="tiaozhanshijian"    />
+        <result property="tiaozhanjindu"    column="tiaozhanjindu"    />
+        <result property="wanchengfenzhi"    column="wanchengfenzhi"    />
+        <result property="tiaozhanzhe"    column="tiaozhanzhe"    />
+        <result property="tiaozhanpingjia"    column="tiaozhanpingjia"    />
+        <result property="tiaozhanshizhang"    column="tiaozhanshizhang"    />
+        <result property="xiaohaotili"    column="xiaohaotili"    />
+        <result property="kuo1"    column="kuo1"    />
+        <result property="kuo2"    column="kuo2"    />
+        <result property="kuo3"    column="kuo3"    />
+        <result property="kuo4"    column="kuo4"    />
+        <result property="kuo5"    column="kuo5"    />
+        <result property="kuo6"    column="kuo6"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectYwMedalJobRecordVo">
+        select jr.id, jr.renwubianhao,ym.biaoti as  renwubianhaoName, jr.tiaozhanshijian, jr.tiaozhanjindu, jr.wanchengfenzhi, jr.tiaozhanzhe, jr.tiaozhanpingjia, jr.tiaozhanshizhang, jr.xiaohaotili, jr.kuo1, jr.kuo2, jr.kuo3, jr.kuo4, su.user_name as kuo5, jr.kuo6, jr.create_by, jr.create_time, jr.update_by, jr.update_time, jr.remark, jr.del_flag from yw_medal_job_record jr
+        left join yw_medal_job ym on ym.id = jr.renwubianhao
+        left join sys_user su on su.user_id = jr.kuo4
+    </sql>
+
+    <select id="selectYwMedalJobRecordList" parameterType="YwMedalJobRecord" resultMap="YwMedalJobRecordResult">
+        <include refid="selectYwMedalJobRecordVo"/>
+        <where>
+            <if test="renwubianhao != null  and renwubianhao != ''"> and jr.renwubianhao = #{renwubianhao}</if>
+            <if test="tiaozhanshijian != null  and tiaozhanshijian != ''"> and jr.tiaozhanshijian = #{tiaozhanshijian}</if>
+            <if test="tiaozhanjindu != null  and tiaozhanjindu != ''"> and jr.tiaozhanjindu = #{tiaozhanjindu}</if>
+            <if test="wanchengfenzhi != null  and wanchengfenzhi != ''"> and jr.wanchengfenzhi = #{wanchengfenzhi}</if>
+            <if test="tiaozhanzhe != null  and tiaozhanzhe != ''"> and jr.tiaozhanzhe = #{tiaozhanzhe}</if>
+            <if test="tiaozhanpingjia != null  and tiaozhanpingjia != ''"> and jr.tiaozhanpingjia = #{tiaozhanpingjia}</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''"> and jr.tiaozhanshizhang = #{tiaozhanshizhang}</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''"> and jr.xiaohaotili = #{xiaohaotili}</if>
+            <if test="kuo1 != null  and kuo1 != ''"> and jr.kuo1 = #{kuo1}</if>
+            <if test="kuo2 != null  and kuo2 != ''"> and jr.kuo2 = #{kuo2}</if>
+            <if test="kuo3 != null  and kuo3 != ''"> and jr.kuo3 = #{kuo3}</if>
+            <if test="kuo4 != null  and kuo4 != ''"> and jr.kuo4 = #{kuo4}</if>
+            <if test="kuo5 != null  and kuo5 != ''"> and jr.kuo5 = #{kuo5}</if>
+            <if test="kuo6 != null  and kuo6 != ''"> and jr.kuo6 = #{kuo6}</if>
+        </where>
+    </select>
+
+    <select id="selectYwMedalJobRecordById" parameterType="String" resultMap="YwMedalJobRecordResult">
+        <include refid="selectYwMedalJobRecordVo"/>
+        where jr.id = #{id}
+    </select>
+
+    <insert id="insertYwMedalJobRecord" parameterType="YwMedalJobRecord">
+        insert into yw_medal_job_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="renwubianhao != null  and renwubianhao != ''">renwubianhao,</if>
+            <if test="tiaozhanshijian != null  and tiaozhanshijian != ''">tiaozhanshijian,</if>
+            <if test="tiaozhanjindu != null  and tiaozhanjindu != ''">tiaozhanjindu,</if>
+            <if test="wanchengfenzhi != null  and wanchengfenzhi != ''">wanchengfenzhi,</if>
+            <if test="tiaozhanzhe != null  and tiaozhanzhe != ''">tiaozhanzhe,</if>
+            <if test="tiaozhanpingjia != null  and tiaozhanpingjia != ''">tiaozhanpingjia,</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">tiaozhanshizhang,</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">xiaohaotili,</if>
+            <if test="kuo1 != null  and kuo1 != ''">kuo1,</if>
+            <if test="kuo2 != null  and kuo2 != ''">kuo2,</if>
+            <if test="kuo3 != null  and kuo3 != ''">kuo3,</if>
+            <if test="kuo4 != null  and kuo4 != ''">kuo4,</if>
+            <if test="kuo5 != null  and kuo5 != ''">kuo5,</if>
+            <if test="kuo6 != null  and kuo6 != ''">kuo6,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="renwubianhao != null  and renwubianhao != ''">#{renwubianhao},</if>
+            <if test="tiaozhanshijian != null  and tiaozhanshijian != ''">#{tiaozhanshijian},</if>
+            <if test="tiaozhanjindu != null  and tiaozhanjindu != ''">#{tiaozhanjindu},</if>
+            <if test="wanchengfenzhi != null  and wanchengfenzhi != ''">#{wanchengfenzhi},</if>
+            <if test="tiaozhanzhe != null  and tiaozhanzhe != ''">#{tiaozhanzhe},</if>
+            <if test="tiaozhanpingjia != null  and tiaozhanpingjia != ''">#{tiaozhanpingjia},</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">#{tiaozhanshizhang},</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">#{xiaohaotili},</if>
+            <if test="kuo1 != null  and kuo1 != ''">#{kuo1},</if>
+            <if test="kuo2 != null  and kuo2 != ''">#{kuo2},</if>
+            <if test="kuo3 != null  and kuo3 != ''">#{kuo3},</if>
+            <if test="kuo4 != null  and kuo4 != ''">#{kuo4},</if>
+            <if test="kuo5 != null  and kuo5 != ''">#{kuo5},</if>
+            <if test="kuo6 != null  and kuo6 != ''">#{kuo6},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateYwMedalJobRecord" parameterType="YwMedalJobRecord">
+        update yw_medal_job_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="renwubianhao != null  and renwubianhao != ''">renwubianhao = #{renwubianhao},</if>
+            <if test="tiaozhanshijian != null  and tiaozhanshijian != ''">tiaozhanshijian = #{tiaozhanshijian},</if>
+            <if test="tiaozhanjindu != null  and tiaozhanjindu != ''">tiaozhanjindu = #{tiaozhanjindu},</if>
+            <if test="wanchengfenzhi != null  and wanchengfenzhi != ''">wanchengfenzhi = #{wanchengfenzhi},</if>
+            <if test="tiaozhanzhe != null  and tiaozhanzhe != ''">tiaozhanzhe = #{tiaozhanzhe},</if>
+            <if test="tiaozhanpingjia != null  and tiaozhanpingjia != ''">tiaozhanpingjia = #{tiaozhanpingjia},</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">tiaozhanshizhang = #{tiaozhanshizhang},</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">xiaohaotili = #{xiaohaotili},</if>
+            <if test="kuo1 != null  and kuo1 != ''">kuo1 = #{kuo1},</if>
+            <if test="kuo2 != null  and kuo2 != ''">kuo2 = #{kuo2},</if>
+            <if test="kuo3 != null  and kuo3 != ''">kuo3 = #{kuo3},</if>
+            <if test="kuo4 != null  and kuo4 != ''">kuo4 = #{kuo4},</if>
+            <if test="kuo5 != null  and kuo5 != ''">kuo5 = #{kuo5},</if>
+            <if test="kuo6 != null  and kuo6 != ''">kuo6 = #{kuo6},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateYwMedalJobRecordState" parameterType="YwMedalJobRecord">
+        update yw_medal_job_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tiaozhanshijian != null  and tiaozhanshijian != ''">tiaozhanshijian = #{tiaozhanshijian},</if>
+            <if test="tiaozhanjindu != null  and tiaozhanjindu != ''">tiaozhanjindu = #{tiaozhanjindu},</if>
+            <if test="wanchengfenzhi != null  and wanchengfenzhi != ''">wanchengfenzhi = #{wanchengfenzhi},</if>
+            <if test="tiaozhanzhe != null  and tiaozhanzhe != ''">tiaozhanzhe = #{tiaozhanzhe},</if>
+            <if test="tiaozhanpingjia != null  and tiaozhanpingjia != ''">tiaozhanpingjia = #{tiaozhanpingjia},</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">tiaozhanshizhang = #{tiaozhanshizhang},</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">xiaohaotili = #{xiaohaotili},</if>
+            <if test="kuo2 != null  and kuo2 != ''">kuo2 = #{kuo2},</if>
+            <if test="kuo3 != null  and kuo3 != ''">kuo3 = #{kuo3},</if>
+            <if test="kuo4 != null  and kuo4 != ''">kuo4 = #{kuo4},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where renwubianhao = #{renwubianhao} and tiaozhanzhe = #{tiaozhanzhe}
+    </update>
+
+    <delete id="deleteYwMedalJobRecordById" parameterType="String">
+        delete from yw_medal_job_record where id = #{id}
+    </delete>
+
+    <delete id="deleteYwMedalJobRecordByIds" parameterType="String">
+        delete from yw_medal_job_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

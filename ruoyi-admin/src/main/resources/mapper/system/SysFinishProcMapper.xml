@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysFinishProcMapper">
+
+    <resultMap type="SysFinishProc" id="SysFinishProcResult">
+        <result property="id"    column="id"    />
+        <result property="procId"    column="proc_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="score"    column="score"    />
+        <result property="finishState"    column="finish_state"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="userName"    column="user_name"    />
+        <result property="procName"    column="menu_name"    />
+        <result property="ex1"    column="ex1"    />
+        <result property="ex2"    column="ex2"    />
+        <result property="ex3"    column="ex3"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="counts"    column="counts"    />
+    </resultMap>
+
+    <sql id="selectSysFinishProcVo">
+        select fp.id, fp.proc_id, fp.user_id, fp.score, fp.finish_state, fp.create_by, fp.create_time, fp.update_by, fp.update_time, fp.remark ,su.user_name,tp.menu_name
+        from sys_finish_proc fp
+        left join sys_train_proc tp on fp.proc_id = tp.menu_id
+        LEFT JOIN sys_user su on su.user_id = fp.user_id
+    </sql>
+
+
+    <select id="selectSysFinishProcTotalScore" resultMap="SysFinishProcResult" parameterType="SysFinishProc">
+        select fp.user_id, sum(fp.score) score,su.user_name,su.avatar,su.remark
+        from sys_finish_proc fp
+        LEFT JOIN sys_user su on su.user_id = fp.user_id
+        where fp.finish_state = '2'
+        <if test="userId != null  and userId != ''"> and fp.user_id = #{userId}</if>
+        group by fp.user_id
+        ORDER BY sum(fp.score) desc
+    </select>
+
+    <select id="selectSysFinishProcListCard" resultMap="SysFinishProcResult" parameterType="SysFinishProc">
+        select fp.user_id, sum(fp.score) score,count(fp.score) counts,su.user_name,su.avatar,su.remark,sd.dept_name,su.create_time
+        from sys_finish_proc fp
+        LEFT JOIN sys_user su on su.user_id = fp.user_id
+        LEFT JOIN sys_dept sd on sd.dept_id = su.dept_id
+        where fp.finish_state = '2'
+        group by fp.user_id
+        ORDER BY count(fp.score) desc
+    </select>
+
+    <select id="selectSysFinishProcListSectionScore" parameterType="SysFinishProc" resultMap="SysFinishProcResult">
+        select fp.user_id, sum(fp.score) score,ifnull(fp.ex1,'未知能力') ex1
+        from sys_finish_proc fp
+        where fp.finish_state = '2' and fp.user_id = ${userId} group by fp.ex1
+    </select>
+
+    <select id="selectSysFinishProcListAfterMe" parameterType="SysFinishProc" resultMap="SysFinishProcResult">
+        select count(fp2.user_id) counts,fp2.user_id  from sys_finish_proc fp2 group  by fp2.user_id having sum(fp2.score) &lt;
+        (SELECT SUM(score) from sys_finish_proc   where user_id = #{userId} )
+    </select>
+
+
+    <select id="selectSysFinishProcList" parameterType="SysFinishProc" resultMap="SysFinishProcResult">
+        <include refid="selectSysFinishProcVo"/>
+        <where>
+            <if test="procId != null  and procId != ''"> and fp.proc_id = #{procId}</if>
+            <if test="userId != null  and userId != ''"> and fp.user_id = #{userId}</if>
+            <if test="score != null  and score != ''"> and fp.score = #{score}</if>
+            <if test="finishState != null  and finishState != ''"> and fp.finish_state = #{finishState}</if>
+        </where>
+        ORDER BY create_time desc
+    </select>
+
+    <select id="selectSysFinishProcById" parameterType="String" resultMap="SysFinishProcResult">
+        <include refid="selectSysFinishProcVo"/>
+        where fp.id = #{id}
+    </select>
+
+    <insert id="insertSysFinishProc" parameterType="SysFinishProc">
+        insert into sys_finish_proc
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="procId != null  and procId != ''">proc_id,</if>
+            <if test="userId != null  and userId != ''">user_id,</if>
+            <if test="score != null  and score != ''">score,</if>
+            <if test="finishState != null  and finishState != ''">finish_state,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="ex1 != null  and ex1 != ''">ex1,</if>
+            <if test="ex2 != null  and ex2 != ''">ex2,</if>
+            <if test="ex3 != null  and ex3 != ''">ex3,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="procId != null  and procId != ''">#{procId},</if>
+            <if test="userId != null  and userId != ''">#{userId},</if>
+            <if test="score != null  and score != ''">#{score},</if>
+            <if test="finishState != null  and finishState != ''">#{finishState},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="ex1 != null  and ex1 != ''">#{ex1},</if>
+            <if test="ex2 != null  and ex2 != ''">#{ex2},</if>
+            <if test="ex3 != null  and ex3 != ''">#{ex3},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysFinishProc" parameterType="SysFinishProc">
+        update sys_finish_proc
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="procId != null  and procId != ''">proc_id = #{procId},</if>
+            <if test="userId != null  and userId != ''">user_id = #{userId},</if>
+            <if test="score != null  and score != ''">score = #{score},</if>
+            <if test="finishState != null  and finishState != ''">finish_state = #{finishState},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateSysFinishProcState" parameterType="SysFinishProc">
+        update sys_finish_proc
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="finishState != null  and finishState != ''">finish_state = #{finishState},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where proc_id = #{procId} and user_id = #{userId}
+    </update>
+
+    <delete id="deleteSysFinishProcById" parameterType="String">
+        delete from sys_finish_proc where id = ${id}
+    </delete>
+
+    <delete id="deleteSysFinishProcByIds" parameterType="String">
+        delete from sys_finish_proc where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

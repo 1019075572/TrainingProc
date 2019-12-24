@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Title</title>
+    <link rel="stylesheet" href="aplayer.css" th:href="@{/music/aplayer.css}">
+    <script src="aplayer.js" th:src="@{/music/aplayer.js}"></script>
+</head>
+<body>
+
+<div id="aplayer"></div>
+</body>
+<th:block th:include="include :: footer" />
+<script>
+    $(function () {
+        initMusicList();
+    });
+    var initMusicList = function () {
+        var link = ctx + "system/finish/music/list";//调用WebAPI的接口获取音乐列表数据
+        var param = {  };
+        $.ajax({
+            type: "GET",
+            url: link,
+            cache: false,  //禁用缓存
+            data: param,  //传入组装的参数
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+                    var musicData = data;
+                    var apmusic = new APlayer({
+                        element: document.getElementById('aplayer'),
+                        narrow: false,
+                        autoplay: false,
+                        showlrc: false,
+                        mutex: false,
+                        fixed: true,
+                        theme: '#ad7a86',
+                        music: musicData
+                    });
+                    apmusic.volume(0.3);
+                    apmusic.on('play', function () {
+                        //此处为记录动作，比如用户点击了播放，用户自定义，详细查看API
+                    });
+                }
+            },
+            error: function (ex) {
+                //alert(ex);
+            }
+        });
+    }
+
+
+
+</script>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('用户个人信息')" />
+    <style>
+        .gray1{
+            border: 2px solid #2e38ed;
+        }
+        .gray2{
+            border: 2px solid #ed3f32;
+        }
+        .gray3{
+            border: 2px solid #e0ed27;
+        }
+        .progress{
+            height: 10px;
+            width: 64px;
+            margin-bottom: 2px;
+        }
+        .layui-rate li i.layui-icon{
+            font-size: 5px;
+        }
+        .btn-xs{
+            font-size: 8px;
+        }
+    </style>
+    <script>
+        function openfull(title,url) {
+            $.modal.openTab(title,url);
+        }
+    </script>
+    <link rel="stylesheet"  th:href="@{/layui/css/layui.css}">
+</head>
+<body class="gray-bg" style="cursor: url(/cursor.ico),auto;font: 14px Helvetica Neue, Helvetica, PingFang SC, 微软雅黑, Tahoma, Arial, sans-serif !important;">
+    <input id="userId" name="userId" type="hidden" th:value="${user.userId}" />
+    <section class="section-content">
+    <div class="row">
+
+        <div id="landlord">
+            <div class="message" style="opacity:0"></div>
+            <canvas id="live2d" width="280" height="250" class="live2d"></canvas>
+        </div>
+        <div class="col-sm-3 pr5">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title ibox-title-gray dashboard-header gray-bg">
+                    <h5 class="show-button">个人资料</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="text-center">
+                        <p><img class="img-circle img-lg" th:src="(${user.avatar} == '') ? @{/img/profile.jpg} : @{${user.avatar}}"></p>
+                        <p><a href="javascript:avatar()">修改头像</a></p>
+                    </div>
+                    <div class="show-button">显示</div>
+                    <div class="hide-button">隐藏</div>
+                    <ul class="list-group list-group-striped">
+                        <li class="list-group-item"><i class="fa fa-user"></i>
+                            <b class="font-noraml show-button">登录名称：</b>
+                            <p class="pull-right">[[${user.loginName}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-phone"></i>
+                            <b  class="font-noraml">手机号码：</b>
+                            <p class="pull-right">[[${user.phonenumber}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-group"></i>
+                            <b  class="font-noraml">所属部门：</b>
+                            <p class="pull-right" >[[${user.dept?.deptName}]] / [[${#strings.defaultString(postGroup,'无岗位')}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-envelope-o"></i>
+                            <b  class="font-noraml">邮箱地址：</b>
+                            <p class="pull-right" >[[${user.email}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-calendar"></i>
+                            <b  class="font-noraml">创建时间：</b>
+                            <p class="pull-right" >[[${#dates.format(user.createTime, 'yyyy-MM-dd')}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-paper-plane"></i>
+                            <b  class="font-noraml" title="在线学习越久，等级越高">平台等级：</b>
+                            <p class="pull-right" >[[${user.level}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-trophy"></i>
+                            <b  class="font-noraml" title="战力越高我就越牛B">我的战力：</b>
+                            <p class="pull-right" >[[${user.zhandouli}]]</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-money"></i>
+                            <b  class="font-noraml" title="学能越多，就可以挑战越多勋章">我的学能：</b>
+                            <p class="pull-right" >[[${user.xueneng}]]</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-9 about">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title ibox-title-gray dashboard-header">
+                    <h5>基本资料</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li ><a href="#user_info" data-toggle="tab" aria-expanded="true">基本资料</a></li>
+                            <li ><a href="#stu_info" data-toggle="tab" aria-expanded="false">玩家资料</a></li>
+                            <li><a href="#modify_password" data-toggle="tab" aria-expanded="false">修改密码</a></li>
+                            <li class="active"><a href="#my_medal" data-toggle="tab" aria-expanded="false">我的勋章</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <!--用户信息-->
+                            <div class="tab-pane " id="user_info" th:object="${user}">
+                                <form class="form-horizontal" id="form-user-edit">
+                                    <!--隐藏ID-->
+                                    <input name="id"  type="hidden">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">用户名称：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="userName" th:field="*{userName}" placeholder="请输入用户名称">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">手机号码：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="phonenumber" maxlength="11" th:field="*{phonenumber}" placeholder="请输入手机号码">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">邮箱：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="email" th:field="*{email}" placeholder="请输入邮箱">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">性别：</label>
+                                        <div class="col-sm-10">
+                                            <div class="radio-box">
+                                                <input type="radio" id="radio1" th:field="*{sex}" name="sex" value="0">
+                                                <label for="radio1">男</label>
+                                            </div>
+                                            <div class="radio-box">
+                                                <input type="radio" id="radio2" th:field="*{sex}" name="sex" value="1">
+                                                <label for="radio2">女</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">个性宣言：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="email" th:field="*{remark}" placeholder="请输入你的牛B宣言">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="submitUserInfo()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="tab-pane" id="stu_info" th:object="${student}">
+                                <form class="form-horizontal" id="form-student-edit">
+                                    <!--隐藏ID-->
+                                    <input name="id" id="id" type="hidden" th:value="*{id}">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">昵称：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="nicheng" th:field="*{nicheng}" placeholder="请输入昵称">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">学号：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="xuehao" maxlength="11" th:field="*{xuehao}" placeholder="请输入学号">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">学校：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="xuexiao" th:field="*{xuexiao}" placeholder="请输入学校">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">年级：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="nianji" th:field="*{nianji}" placeholder="请输入年级">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">专业：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="zhuanye" th:field="*{zhuanye}" placeholder="请输入专业">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">住址：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="sushe" th:field="*{sushe}" placeholder="请输入住址">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">QQ：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="koukouhao" th:field="*{koukouhao}" placeholder="请输入QQ">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">个性宣言：</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="xuanyan" th:field="*{xuanyan}" placeholder="请输入你的牛B宣言">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="submitStudentInfo()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!--修改密码-->
+                            <div class="tab-pane" id="modify_password">
+                                <form class="form-horizontal" id="form-user-resetPwd">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">旧密码：</label>
+                                        <div class="col-sm-10">
+                                            <input type="password" class="form-control" name="oldPassword" placeholder="请输入旧密码">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">新密码：</label>
+                                        <div class="col-sm-10">
+                                            <input type="password" class="form-control" name="newPassword" id="newPassword" placeholder="请输入新密码">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">确认密码：</label>
+                                        <div class="col-sm-10">
+                                            <input type="password" class="form-control" name="confirmPassword" placeholder="请确认密码">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="submitChangPassword()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!--我的战力称号-->
+                            <div class="tab-pane active" id="my_medal">
+                                <form class="form-horizontal" id="form-my-medal">
+                                    <div>
+                                    <h4 class="form-header h4">新手入门</h4>
+                                    <div class="form-group">
+                                        <div class="col-sm-1" th:each="obj:${ywMedalList1}">
+
+                                            <img  th:src="${obj.tupian}" class="img-rounded img-sm gray1 viewer"
+                                                  th:style="'filter:grayscale(' + @{${obj.leftProc}}+'%);'" >
+                                            <div  class="progress progress-striped active" th:title="'当前进度' + @{${obj.prcession}}+'%'">
+
+                                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60"
+                                                     aria-valuemin="0" aria-valuemax="100" th:style="'width:' + @{${obj.prcession}}+'%'"  >
+                                                </div>
+
+                                            </div>
+                                            <a title="进入挑战" th:onclick="openfull('挑战称号','/system/medal/detail/'+[[${obj.id}]])">
+                                            <button type="button" class="btn btn-info btn-xs">
+                                                <span class="glyphicon glyphicon-plus-sign"></span> [[${obj.chenghao}]]
+                                            </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <h4 class="form-header h4">菜鸟出村</h4>
+                                    <div class="form-group">
+                                        <div class="col-sm-1" th:each="obj:${ywMedalList2}">
+
+                                            <img  th:src="${obj.tupian}" class="img-rounded img-sm gray2 viewer" th:style="'filter:grayscale(' + @{${obj.leftProc}}+'%);'" >
+
+                                            <div  class="progress progress-striped active" th:title="'当前进度' + @{${obj.prcession}}+'%'">
+                                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60"
+                                                         aria-valuemin="0" aria-valuemax="100" th:style="'width:' + @{${obj.prcession}}+'%'"  >
+                                            </div>
+
+                                            </div>
+                                            <a title="进入挑战" th:onclick="openfull('挑战称号','/system/medal/detail/'+[[${obj.id}]])">
+                                            <button type="button" class="btn btn-info btn-xs">
+                                                <span class="glyphicon glyphicon-plus-sign"></span> [[${obj.chenghao}]]
+                                            </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <h4 class="form-header h4">小有成就</h4>
+                                    <div class="form-group">
+                                        <div class="col-sm-1" th:each="obj:${ywMedalList3}">
+
+                                            <img  th:src="${obj.tupian}" class="img-rounded img-sm gray3 viewer" th:style="'filter:grayscale(' + @{${obj.leftProc}}+'%); '" >
+
+                                            <div  class="progress progress-striped active" th:title="'当前进度' + @{${obj.prcession}}+'%'">
+                                                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60"
+                                                         aria-valuemin="0" aria-valuemax="100" th:style="'width:' + @{${obj.prcession}}+'%'"  >
+                                                    </div>
+                                            </div>
+                                            <a title="进入挑战" th:onclick="openfull('挑战称号','/system/medal/detail/'+[[${obj.id}]])">
+                                            <button type="button" class="btn btn-info btn-xs">
+                                                <span class="glyphicon glyphicon-plus-sign"></span> [[${obj.chenghao}]]
+                                            </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	</section>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: live2d" />
+    <script type="text/javascript">
+        $(function () {
+            $('.viewer').bootstrapViewer();//The default image source file path is the src attribute of the img tag.
+        })
+    </script>
+    <script>
+	    /*用户管理-头像*/
+	    function avatar() {
+	        var url = ctx + 'system/user/profile/avatar';
+	        $.modal.open("修改头像", url);
+	    }
+
+	    /*用户信息-修改*/
+	    $("#form-user-edit").validate({
+			onkeyup: false,
+			rules:{
+				userName:{
+					required:true,
+				},
+				email:{
+					required:true,
+		            email:true,
+		            remote: {
+		                url: ctx + "system/user/checkEmailUnique",
+		                type: "post",
+		                dataType: "json",
+		                data: {
+		                	"userId": function() {
+		                        return $("#userId").val();
+		                    },
+		        			"email": function() {
+		                        return $.common.trim($("#email").val());
+		                    }
+		                },
+		                dataFilter: function (data, type) {
+		                	return $.validate.unique(data);
+		                }
+		            }
+				},
+				phonenumber:{
+					required:true,
+					isPhone:true,
+		            remote: {
+		                url: ctx + "system/user/checkPhoneUnique",
+		                type: "post",
+		                dataType: "json",
+		                data: {
+		                	"userId": function() {
+		                		return $("#userId").val();
+		                    },
+		        			"phonenumber": function() {
+		                        return $.common.trim($("#phonenumber").val());
+		                    }
+		                },
+		                dataFilter: function (data, type) {
+		                	return $.validate.unique(data);
+		                }
+		            }
+				},
+			},
+			messages: {
+				"userName": {
+	                required: "请输入用户名称",
+	            },
+				"email": {
+					required: "请输入邮箱",
+		            remote: "Email已经存在"
+		        },
+				"phonenumber":{
+					required: "请输入手机号码",
+		        	remote: "手机号码已经存在"
+				}
+		    },
+		    focusCleanup: true
+		});
+
+		function submitUserInfo() {
+	        if ($.validate.form()) {
+	        	$.operate.saveModal(ctx + "system/user/profile/update", $('#form-user-edit').serialize());
+	        }
+	    }
+	    /*玩家信息-修改*/
+	    $("#form-student-edit").validate({
+			onkeyup: false,
+			rules:{
+				nicheng:{
+					required:true
+				},
+				xuexiao:{
+					required:true
+				},
+				xuehao:{
+					required:true
+				},
+				nianji:{
+					required:true
+				},
+				zhuanye:{
+					required:true
+				}
+			},
+			messages: {
+				"nicheng": {
+	                required: "请输入昵称"
+	            },
+				"xuexiao": {
+	                required: "请输入学校"
+	            },
+				"xuehao": {
+	                required: "请输入学号"
+	            },
+				"nianji": {
+	                required: "请输入年级"
+	            },
+				"zhuanye": {
+	                required: "请输入专业"
+	            }
+		    },
+		    focusCleanup: true
+		});
+
+		function submitStudentInfo() {
+	        if ($.validate.form("form-student-edit")) {
+	        	$.operate.saveModal(ctx + "system/student/save", $('#form-student-edit').serialize());
+	        }
+	    }
+
+	    /*用户管理-修改密码*/
+	    $("#form-user-resetPwd").validate({
+	    	onkeyup: false,
+			rules:{
+				oldPassword:{
+					required:true,
+					remote: {
+	                    url: ctx + "system/user/profile/checkPassword",
+	                    type: "get",
+	                    dataType: "json",
+	                    data: {
+	                        password: function() {
+	                            return $("input[name='oldPassword']").val();
+	                        }
+	                    }
+	                }
+				},
+				newPassword: {
+	                required: true,
+	                minlength: 6,
+	    			maxlength: 20
+	            },
+	            confirmPassword: {
+	                required: true,
+	                equalTo: "#newPassword"
+	            }
+			},
+			messages: {
+	            oldPassword: {
+	                required: "请输入原密码",
+	                remote: "原密码错误"
+	            },
+	            newPassword: {
+	                required: "请输入新密码",
+	                minlength: "密码不能小于6个字符",
+	                maxlength: "密码不能大于20个字符"
+	            },
+	            confirmPassword: {
+	                required: "请再次输入新密码",
+	                equalTo: "两次密码输入不一致"
+	            }
+
+	        },
+	        focusCleanup: true
+		});
+
+		function submitChangPassword () {
+	        if ($.validate.form("form-user-resetPwd")) {
+	        	$.operate.saveModal(ctx + "system/user/profile/resetPwd", $('#form-user-resetPwd').serialize());
+	        }
+	    }
+	</script>
+
+    <script th:src="@{/layui/layui.js}" ></script>
+    <script>
+        layui.use(['rate'], function(){
+            var rate = layui.rate;
+
+
+            //只读
+            rate.render({
+                elem: '#test9'
+                ,value: 4
+                ,readonly: true
+            });
+
+
+        });
+    </script>
+    <script th:src="@{/js/bootstrap.viewer.min.js}" ></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CalendarMapper">
+
+    <resultMap type="Calendar" id="CalendarResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="starttime"    column="starttime"    />
+        <result property="endtime"    column="endtime"    />
+        <result property="allday"    column="allday"    />
+        <result property="color"    column="color"    />
+        <result property="user.userId"    column="userid"    />
+        <result property="user.userName"    column="user_name"    />
+    </resultMap>
+
+    <sql id="selectCalendarVo">
+        select tb.id, tb.title, tb.starttime, tb.endtime, tb.allday, tb.color, tb.userid,tuser.user_name from calendar tb
+        LEFT JOIN sys_user tuser ON tuser.user_id = tb.userid
+    </sql>
+
+    <select id="selectCalendarList" parameterType="Calendar" resultMap="CalendarResult">
+        <include refid="selectCalendarVo"/>
+        <where>
+            <if test="title != null  and title != ''"> and tb.title = #{title}</if>
+            <if test="starttime != null "> and tb.starttime = #{starttime}</if>
+            <if test="endtime != null "> and tb.endtime = #{endtime}</if>
+            <if test="allday != null  and allday != ''"> and tb.allday = #{allday}</if>
+            <if test="color != null  and color != ''"> and tb.color = #{color}</if>
+            <if test="user != null and user.userId != null  and user.userId != ''"> and tb.userid = #{user.userId}</if>
+        </where>
+    </select>
+
+    <select id="selectCalendarById" parameterType="String" resultMap="CalendarResult">
+        <include refid="selectCalendarVo"/>
+        where tb.id = #{id}
+    </select>
+
+    <insert id="insertCalendar" parameterType="Calendar">
+        insert into calendar
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="title != null  and title != ''">title,</if>
+            <if test="starttime != null ">starttime,</if>
+            <if test="endtime != null ">endtime,</if>
+            <if test="allday != null  and allday != ''">allday,</if>
+            <if test="color != null  and color != ''">color,</if>
+            <if test="user != null and user.userId != null  and user.userId != ''">userid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="title != null  and title != ''">#{title},</if>
+            <if test="starttime != null ">#{starttime},</if>
+            <if test="endtime != null ">#{endtime},</if>
+            <if test="allday != null  and allday != ''">#{allday},</if>
+            <if test="color != null  and color != ''">#{color},</if>
+            <if test="user != null and user.userId != null  and user.userId != ''">#{user.userId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCalendar" parameterType="Calendar">
+        update calendar
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null  and title != ''">title = #{title},</if>
+            <if test="starttime != null ">starttime = #{starttime},</if>
+            <if test="endtime != null ">endtime = #{endtime},</if>
+            <if test="allday != null  and allday != ''">allday = #{allday},</if>
+            <if test="color != null  and color != ''">color = #{color},</if>
+            <if test="user != null and user.userId != null  and user.userId != ''">userid = #{user.userId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCalendarById" parameterType="String">
+        delete from calendar where id = #{id}
+    </delete>
+
+    <delete id="deleteCalendarByIds" parameterType="String">
+        delete from calendar where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

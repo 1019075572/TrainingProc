@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改完成情况')" />
+    <th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-finish-edit" th:object="${sysFinishProc}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="procId" th:field="*{procId}" class="form-control" type="hidden">
+            <input name="userId" th:field="*{userId}" class="form-control" type="hidden">
+            <input name="score" th:field="*{score}" class="form-control" type="hidden">
+            <input name="finishState" th:field="*{finishState}" class="form-control" type="hidden">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input name="remark" id="remark" th:field="*{remark}" class="form-control" type="hidden">
+                    <div id="editor" class="summernote"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/proc";
+        $("#form-finish-edit").validate({
+            focusCleanup: true
+        });
+
+
+        $('.summernote').summernote({
+            placeholder: '请输入完成内容',
+            height : 192,
+            lang : 'zh-CN',
+            followingToolbar: false,
+            callbacks: {
+                onImageUpload: function (files) {
+                    sendFile(files[0], this);
+                }
+            }
+        });
+        var content = $("#remark").val();
+        $('#editor').summernote('code', content);
+        function submitHandler() {
+            if ($.validate.form()) {
+                var sHTML = $('.summernote').summernote('code');
+                $("#remark").val(sHTML);
+                $.operate.save(prefix + "/finished", $('#form-finish-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

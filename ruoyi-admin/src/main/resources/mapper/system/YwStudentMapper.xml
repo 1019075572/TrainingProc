@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YwStudentMapper">
+    
+    <resultMap type="YwStudent" id="YwStudentResult">
+        <result property="id"    column="id"    />
+        <result property="zhujian"    column="zhujian"    />
+        <result property="nicheng"    column="nicheng"    />
+        <result property="xuehao"    column="xuehao"    />
+        <result property="yonghubianhao"    column="yonghubianhao"    />
+        <result property="xuexiao"    column="xuexiao"    />
+        <result property="nianji"    column="nianji"    />
+        <result property="zhuanye"    column="zhuanye"    />
+        <result property="dengji"    column="dengji"    />
+        <result property="sushe"    column="sushe"    />
+        <result property="koukouhao"    column="koukouhao"    />
+        <result property="xuanyan"    column="xuanyan"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectYwStudentVo">
+        select id, zhujian, nicheng, xuehao, yonghubianhao, xuexiao, nianji, zhuanye, dengji, sushe, koukouhao, xuanyan, create_by, create_time, update_by, update_time, remark, del_flag from yw_student
+    </sql>
+
+    <select id="selectYwStudentList" parameterType="YwStudent" resultMap="YwStudentResult">
+        <include refid="selectYwStudentVo"/>
+        <where>  
+            <if test="zhujian != null  and zhujian != ''"> and zhujian = #{zhujian}</if>
+            <if test="nicheng != null  and nicheng != ''"> and nicheng = #{nicheng}</if>
+            <if test="xuehao != null  and xuehao != ''"> and xuehao = #{xuehao}</if>
+            <if test="yonghubianhao != null  and yonghubianhao != ''"> and yonghubianhao = #{yonghubianhao}</if>
+            <if test="xuexiao != null  and xuexiao != ''"> and xuexiao = #{xuexiao}</if>
+            <if test="nianji != null  and nianji != ''"> and nianji = #{nianji}</if>
+            <if test="zhuanye != null  and zhuanye != ''"> and zhuanye = #{zhuanye}</if>
+            <if test="dengji != null  and dengji != ''"> and dengji = #{dengji}</if>
+            <if test="sushe != null  and sushe != ''"> and sushe = #{sushe}</if>
+            <if test="koukouhao != null  and koukouhao != ''"> and koukouhao = #{koukouhao}</if>
+            <if test="xuanyan != null  and xuanyan != ''"> and xuanyan = #{xuanyan}</if>
+        </where>
+    </select>
+    
+    <select id="selectYwStudentById" parameterType="String" resultMap="YwStudentResult">
+        <include refid="selectYwStudentVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertYwStudent" parameterType="YwStudent">
+        insert into yw_student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="zhujian != null  and zhujian != ''">zhujian,</if>
+            <if test="nicheng != null  and nicheng != ''">nicheng,</if>
+            <if test="xuehao != null  and xuehao != ''">xuehao,</if>
+            <if test="yonghubianhao != null  and yonghubianhao != ''">yonghubianhao,</if>
+            <if test="xuexiao != null  and xuexiao != ''">xuexiao,</if>
+            <if test="nianji != null  and nianji != ''">nianji,</if>
+            <if test="zhuanye != null  and zhuanye != ''">zhuanye,</if>
+            <if test="dengji != null  and dengji != ''">dengji,</if>
+            <if test="sushe != null  and sushe != ''">sushe,</if>
+            <if test="koukouhao != null  and koukouhao != ''">koukouhao,</if>
+            <if test="xuanyan != null  and xuanyan != ''">xuanyan,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="zhujian != null  and zhujian != ''">#{zhujian},</if>
+            <if test="nicheng != null  and nicheng != ''">#{nicheng},</if>
+            <if test="xuehao != null  and xuehao != ''">#{xuehao},</if>
+            <if test="yonghubianhao != null  and yonghubianhao != ''">#{yonghubianhao},</if>
+            <if test="xuexiao != null  and xuexiao != ''">#{xuexiao},</if>
+            <if test="nianji != null  and nianji != ''">#{nianji},</if>
+            <if test="zhuanye != null  and zhuanye != ''">#{zhuanye},</if>
+            <if test="dengji != null  and dengji != ''">#{dengji},</if>
+            <if test="sushe != null  and sushe != ''">#{sushe},</if>
+            <if test="koukouhao != null  and koukouhao != ''">#{koukouhao},</if>
+            <if test="xuanyan != null  and xuanyan != ''">#{xuanyan},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateYwStudent" parameterType="YwStudent">
+        update yw_student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="zhujian != null  and zhujian != ''">zhujian = #{zhujian},</if>
+            <if test="nicheng != null  and nicheng != ''">nicheng = #{nicheng},</if>
+            <if test="xuehao != null  and xuehao != ''">xuehao = #{xuehao},</if>
+            <if test="yonghubianhao != null  and yonghubianhao != ''">yonghubianhao = #{yonghubianhao},</if>
+            <if test="xuexiao != null  and xuexiao != ''">xuexiao = #{xuexiao},</if>
+            <if test="nianji != null  and nianji != ''">nianji = #{nianji},</if>
+            <if test="zhuanye != null  and zhuanye != ''">zhuanye = #{zhuanye},</if>
+            <if test="dengji != null  and dengji != ''">dengji = #{dengji},</if>
+            <if test="sushe != null  and sushe != ''">sushe = #{sushe},</if>
+            <if test="koukouhao != null  and koukouhao != ''">koukouhao = #{koukouhao},</if>
+            <if test="xuanyan != null  and xuanyan != ''">xuanyan = #{xuanyan},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteYwStudentById" parameterType="String">
+        delete from yw_student where id = #{id}
+    </delete>
+
+    <delete id="deleteYwStudentByIds" parameterType="String">
+        delete from yw_student where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

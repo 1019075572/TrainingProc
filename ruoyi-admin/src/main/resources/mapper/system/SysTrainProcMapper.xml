@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysTrainProcMapper">
+
+    <resultMap type="SysTrainProc" id="SysTrainProcResult">
+        <result property="menuId"    column="menu_id"    />
+        <result property="menuName"    column="menu_name"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="url"    column="url"    />
+        <result property="target"    column="target"    />
+        <result property="menuType"    column="menu_type"    />
+        <result property="visible"    column="visible"    />
+        <result property="perms"    column="perms"    />
+        <result property="icon"    column="icon"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="ex1"    column="ex1"    />
+        <result property="ex2"    column="ex2"    />
+        <result property="ex3"    column="ex3"    />
+        <result property="parentIds"    column="parent_ids"    />
+        <result property="treeLeaf"    column="tree_leaf"    />
+        <result property="treeLevel"    column="tree_level"    />
+        <result property="finishState"    column="finish_state"    />
+        <result property="parentName"    column="parent_name"    />
+    </resultMap>
+
+    <sql id="selectMenuVo">
+        select menu_id, menu_name, parent_id, order_num, url, target, menu_type, visible, ifnull(perms,'') as perms, icon, create_by, create_time,ex2,ex3,remark
+		from sys_train_proc
+    </sql>
+
+    <select id="selectMenusByUserId" parameterType="String" resultMap="SysTrainProcResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time
+		from sys_train_proc m
+			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+			 left join sys_user_role ur on rm.role_id = ur.role_id
+			 LEFT JOIN sys_role ro on ur.role_id = ro.role_id
+		where ur.user_id = #{userId} and m.menu_type in ('M', 'C') and m.visible = 0  AND ro.status = 0
+		order by m.parent_id, m.order_num
+	</select>
+
+    <select id="selectMenuNormalAll" resultMap="SysTrainProcResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time
+		from sys_train_proc m
+		where m.menu_type in ('M', 'C') and m.visible = 0
+		order by m.parent_id, m.order_num
+	</select>
+
+    <select id="selectMenuAll" resultMap="SysTrainProcResult">
+        <include refid="selectMenuVo"/>
+        order by parent_id, order_num
+    </select>
+
+    <select id="selectMenuAllByUserId" parameterType="String" resultMap="SysTrainProcResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time,m.ex2,m.ex3
+		from sys_train_proc m
+			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+			 left join sys_user_role ur on rm.role_id = ur.role_id
+			 LEFT JOIN sys_role ro on ur.role_id = ro.role_id
+		where ur.user_id = #{userId}
+		order by m.parent_id, m.order_num
+	</select>
+
+    <select id="selectPermsByUserId" parameterType="String" resultType="String">
+		select distinct m.perms
+		from sys_train_proc m
+			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+			 left join sys_user_role ur on rm.role_id = ur.role_id
+		where ur.user_id = #{userId}
+	</select>
+
+    <select id="selectMenuTree" parameterType="String" resultType="String">
+		select concat(m.menu_id, ifnull(m.perms,'')) as perms
+		from sys_train_proc m
+			left join sys_role_menu rm on m.menu_id = rm.menu_id
+		where rm.role_id = #{roleId}
+		order by m.parent_id, m.order_num
+	</select>
+
+    <select id="selectMenuList" parameterType="SysTrainProc" resultMap="SysTrainProcResult">
+        <include refid="selectMenuVo"/>
+        <where>
+            <if test="menuName != null and menuName != ''">
+                AND menu_name like concat('%', #{menuName}, '%')
+            </if>
+            <if test="visible != null and visible != ''">
+                AND visible = #{visible}
+            </if>
+        </where>
+        order by parent_id, order_num
+    </select>
+
+    <select id="selectMenuListByUserId" parameterType="SysTrainProc" resultMap="SysTrainProcResult">
+        select distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time,ifnull(fp.finish_state,'0') as finish_state,m.ex2,m.ex3,m.remark
+        from sys_train_proc m
+        left join sys_role_menu rm on m.menu_id = rm.menu_id
+        left join sys_user_role ur on rm.role_id = ur.role_id
+        LEFT JOIN sys_role ro on ur.role_id = ro.role_id
+        LEFT JOIN sys_finish_proc fp on fp.proc_id = m.menu_id and fp.user_id = #{params.userId}
+        <where>
+        <if test="menuName != null and menuName != ''">
+            AND m.menu_name like concat('%', #{menuName}, '%')
+        </if>
+        <if test="visible != null and visible != ''">
+            AND m.visible = #{visible}
+        </if>
+        <if test="finishState != null and finishState !='' and finishState != '0'.toString()">
+            AND fp.finish_state = #{finishState}
+        </if>
+        <if test="finishState != null and finishState == '0'.toString()">
+            AND fp.finish_state is null
+        </if>
+        </where>
+        order by m.parent_id, m.order_num
+    </select>
+
+    <delete id="deleteMenuById" parameterType="String">
+	    delete from sys_train_proc where menu_id = #{menuId} or parent_id = #{menuId}
+	</delete>
+
+    <select id="selectMenuById" parameterType="String" resultMap="SysTrainProcResult">
+		SELECT t.menu_id, t.parent_id, t.menu_name, t.order_num, t.url, t.target, t.menu_type, t.visible, t.perms, t.icon, t.remark,
+			(SELECT menu_name FROM sys_train_proc WHERE menu_id = t.parent_id) parent_name, ex2, ex3
+		FROM sys_train_proc t
+		where t.menu_id = #{menuId}
+	</select>
+
+    <select id="selectCountMenuByParentId" resultType="Integer">
+	    select count(1) from sys_train_proc where parent_id=#{menuId}
+	</select>
+
+    <select id="checkMenuNameUnique" parameterType="SysTrainProc" resultMap="SysTrainProcResult">
+        <include refid="selectMenuVo"/>
+        where menu_name=#{menuName} and parent_id = #{parentId}
+    </select>
+
+    <update id="updateMenu" parameterType="SysTrainProc">
+        update sys_train_proc
+        <set>
+            <if test="menuName != null and menuName != ''">menu_name = #{menuName},</if>
+            <if test="parentId != null ">parent_id = #{parentId},</if>
+            <if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
+            <if test="url != null and url != ''">url = #{url},</if>
+            <if test="target != null and target != ''">target = #{target},</if>
+            <if test="menuType != null and menuType != ''">menu_type = #{menuType},</if>
+            <if test="visible != null">visible = #{visible},</if>
+            <if test="perms !=null">perms = #{perms},</if>
+            <if test="icon !=null and icon != ''">icon = #{icon},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="ex2 != null and ex2 != ''">ex2 = #{ex2},</if>
+            <if test="ex3 != null and ex3 != ''">ex3 = #{ex3},</if>
+            update_time = sysdate()
+        </set>
+        where menu_id = #{menuId}
+    </update>
+
+    <insert id="insertMenu" parameterType="SysTrainProc">
+        insert into sys_train_proc(
+        <if test="menuId != null ">menu_id,</if>
+        <if test="parentId != null ">parent_id,</if>
+        <if test="menuName != null and menuName != ''">menu_name,</if>
+        <if test="orderNum != null and orderNum != ''">order_num,</if>
+        <if test="url != null and url != ''">url,</if>
+        <if test="target != null and target != ''">target,</if>
+        <if test="menuType != null and menuType != ''">menu_type,</if>
+        <if test="visible != null">visible,</if>
+        <if test="perms !=null and perms != ''">perms,</if>
+        <if test="icon != null and icon != ''">icon,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="ex2 != null and ex2 != ''">ex2,</if>
+        <if test="ex3 != null and ex3 != ''">ex3,</if>
+        create_time
+        )values(
+        <if test="menuId != null  ">#{menuId},</if>
+        <if test="parentId != null  ">#{parentId},</if>
+        <if test="menuName != null and menuName != ''">#{menuName},</if>
+        <if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+        <if test="url != null and url != ''">#{url},</if>
+        <if test="target != null and target != ''">#{target},</if>
+        <if test="menuType != null and menuType != ''">#{menuType},</if>
+        <if test="visible != null">#{visible},</if>
+        <if test="perms !=null and perms != ''">#{perms},</if>
+        <if test="icon != null and icon != ''">#{icon},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="ex2 != null and ex2 != ''">#{ex2},</if>
+        <if test="ex3 != null and ex3 != ''">#{ex3},</if>
+        sysdate()
+        )
+    </insert>
+
+</mapper>

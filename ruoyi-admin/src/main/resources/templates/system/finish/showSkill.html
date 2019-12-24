@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('完成情况列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div" style="padding: 0px">
+         <div class="col-sm-6" style="padding: 0px">
+             <div class="ibox float-e-margins" style="padding: 0px;height: 100%">
+                 <div class="ibox-content" style="padding: 0px;height: 100%;margin-bottom: 90px;">
+                     <div class="echarts" id="echarts-radar-chart"></div>
+                 </div>
+             </div>
+         </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: echarts-js" />
+    <script th:inline="javascript">
+        $(function() {
+            var a = [[${hyjy}]];
+            var b = [[${xmjy}]];
+            var c = [[${jsnl}]];
+            var d = [[${zxnl}]];
+            var e = [[${zhnl}]];
+            var f = [[${zysy}]];
+            var userName = [[${userName}]];
+            var radarChart = echarts.init(document.getElementById("echarts-radar-chart"));
+            var radaroption = {
+                title : {
+                    text: '能力六芒星',
+                    subtext: userName
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    orient : 'vertical',
+                    x : 'right',
+                    y : 'bottom',
+                    data:['我的实力']
+                },
+                polar : [
+                    {
+                        indicator : [
+                            { text: '行业经验', max: 500},
+                            { text: '项目经验', max: 500},
+                            { text: '技术能力', max: 500},
+                            { text: '自学能力', max: 500},
+                            { text: '综合能力', max: 500},
+                            { text: '职业素养', max: 500}
+                        ]
+                    }
+                ],
+                calculable : true,
+                series : [
+                    {
+                        name: '预算 vs 开销',
+                        type: 'radar',
+                        tooltip: {
+                            trigger: 'item'
+                        },
+                        data : [
+                            {
+                                value : [a,b,c,d,e,f],
+                                name : '我的实力'
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            radarChart.setOption(radaroption);
+            $(window).resize(radarChart.resize);
+        });
+
+
+    </script>
+</body>
+</html>

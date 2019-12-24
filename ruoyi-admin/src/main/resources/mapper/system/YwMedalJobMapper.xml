@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YwMedalJobMapper">
+
+    <resultMap type="YwMedalJob" id="YwMedalJobResult">
+        <result property="id"    column="id"    />
+        <result property="guishuchenghao"    column="guishuchenghao"    />
+        <result property="guishuchenghaoName"    column="guishuchenghaoName"    />
+        <result property="fenzhi"    column="fenzhi"    />
+        <result property="biaoti"    column="biaoti"    />
+        <result property="neirong"    column="neirong"    />
+        <result property="leibie"    column="leibie"    />
+        <result property="leixing"    column="leixing"    />
+        <result property="nandu"    column="nandu"    />
+        <result property="tiaozhanshizhang"    column="tiaozhanshizhang"    />
+        <result property="xiaohaotili"    column="xiaohaotili"    />
+        <result property="kuo1"    column="kuo1"    />
+        <result property="kuo2"    column="kuo2"    />
+        <result property="kuo3"    column="kuo3"    />
+        <result property="kuo4"    column="kuo4"    />
+        <result property="kuo5"    column="kuo5"    />
+        <result property="kuo6"    column="kuo6"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectYwMedalJobVo">
+        select mj.id, mj.guishuchenghao,ym.chenghao as guishuchenghaoName, mj.fenzhi, mj.biaoti, mj.neirong, mj.leibie, mj.leixing, mj.nandu, mj.tiaozhanshizhang, mj.xiaohaotili, mj.kuo1, ifnull(jr.kuo2,'0') as kuo2, mj.kuo3, mj.kuo4, mj.kuo5, jr.kuo6, mj.create_by, mj.create_time, mj.update_by, mj.update_time, mj.remark, mj.del_flag from yw_medal_job  mj
+        left join yw_medal_job_record jr on jr.renwubianhao = mj.id
+        <if test="kuo6 != null  and kuo6 != ''"> and jr.tiaozhanzhe = #{kuo6}</if>
+        left join yw_medal ym on ym.id = mj.guishuchenghao
+    </sql>
+
+    <select id="selectYwMedalJobList" parameterType="YwMedalJob" resultMap="YwMedalJobResult">
+        <include refid="selectYwMedalJobVo"/>
+        <where>
+            <if test="guishuchenghao != null  and guishuchenghao != ''"> and mj.guishuchenghao = #{guishuchenghao}</if>
+            <if test="fenzhi != null  and fenzhi != ''"> and mj.fenzhi = #{fenzhi}</if>
+            <if test="biaoti != null  and biaoti != ''"> and mj.biaoti = #{biaoti}</if>
+            <if test="neirong != null  and neirong != ''"> and mj.neirong = #{neirong}</if>
+            <if test="leibie != null  and leibie != ''"> and mj.leibie = #{leibie}</if>
+            <if test="leixing != null  and leixing != ''"> and mj.leixing = #{leixing}</if>
+            <if test="nandu != null  and nandu != ''"> and mj.nandu = #{nandu}</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''"> and mj.tiaozhanshizhang = #{tiaozhanshizhang}</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''"> and mj.xiaohaotili = #{xiaohaotili}</if>
+
+        </where>
+    </select>
+
+    <select id="selectYwMedalJobById" parameterType="String" resultMap="YwMedalJobResult">
+        select mj.id, mj.guishuchenghao,ym.chenghao as guishuchenghaoName, mj.fenzhi, mj.biaoti, mj.neirong, mj.leibie, mj.leixing, mj.nandu, mj.tiaozhanshizhang, mj.xiaohaotili, mj.kuo1,  mj.kuo3, mj.kuo4, mj.kuo5,  mj.create_by, mj.create_time, mj.update_by, mj.update_time, mj.remark, mj.del_flag from yw_medal_job  mj
+--         left join yw_medal_job_record jr on jr.renwubianhao = mj.id
+        left join yw_medal ym on ym.id = mj.guishuchenghao
+        where mj.id = #{id}
+    </select>
+
+    <insert id="insertYwMedalJob" parameterType="YwMedalJob">
+        insert into yw_medal_job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="guishuchenghao != null  and guishuchenghao != ''">guishuchenghao,</if>
+            <if test="fenzhi != null  and fenzhi != ''">fenzhi,</if>
+            <if test="biaoti != null  and biaoti != ''">biaoti,</if>
+            <if test="neirong != null  and neirong != ''">neirong,</if>
+            <if test="leibie != null  and leibie != ''">leibie,</if>
+            <if test="leixing != null  and leixing != ''">leixing,</if>
+            <if test="nandu != null  and nandu != ''">nandu,</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">tiaozhanshizhang,</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">xiaohaotili,</if>
+            <if test="kuo1 != null  and kuo1 != ''">kuo1,</if>
+            <if test="kuo2 != null  and kuo2 != ''">kuo2,</if>
+            <if test="kuo3 != null  and kuo3 != ''">kuo3,</if>
+            <if test="kuo4 != null  and kuo4 != ''">kuo4,</if>
+            <if test="kuo5 != null  and kuo5 != ''">kuo5,</if>
+            <if test="kuo6 != null  and kuo6 != ''">kuo6,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="guishuchenghao != null  and guishuchenghao != ''">#{guishuchenghao},</if>
+            <if test="fenzhi != null  and fenzhi != ''">#{fenzhi},</if>
+            <if test="biaoti != null  and biaoti != ''">#{biaoti},</if>
+            <if test="neirong != null  and neirong != ''">#{neirong},</if>
+            <if test="leibie != null  and leibie != ''">#{leibie},</if>
+            <if test="leixing != null  and leixing != ''">#{leixing},</if>
+            <if test="nandu != null  and nandu != ''">#{nandu},</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">#{tiaozhanshizhang},</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">#{xiaohaotili},</if>
+            <if test="kuo1 != null  and kuo1 != ''">#{kuo1},</if>
+            <if test="kuo2 != null  and kuo2 != ''">#{kuo2},</if>
+            <if test="kuo3 != null  and kuo3 != ''">#{kuo3},</if>
+            <if test="kuo4 != null  and kuo4 != ''">#{kuo4},</if>
+            <if test="kuo5 != null  and kuo5 != ''">#{kuo5},</if>
+            <if test="kuo6 != null  and kuo6 != ''">#{kuo6},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateYwMedalJob" parameterType="YwMedalJob">
+        update yw_medal_job
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="guishuchenghao != null  and guishuchenghao != ''">guishuchenghao = #{guishuchenghao},</if>
+            <if test="fenzhi != null  and fenzhi != ''">fenzhi = #{fenzhi},</if>
+            <if test="biaoti != null  and biaoti != ''">biaoti = #{biaoti},</if>
+            <if test="neirong != null  and neirong != ''">neirong = #{neirong},</if>
+            <if test="leibie != null  and leibie != ''">leibie = #{leibie},</if>
+            <if test="leixing != null  and leixing != ''">leixing = #{leixing},</if>
+            <if test="nandu != null  and nandu != ''">nandu = #{nandu},</if>
+            <if test="tiaozhanshizhang != null  and tiaozhanshizhang != ''">tiaozhanshizhang = #{tiaozhanshizhang},</if>
+            <if test="xiaohaotili != null  and xiaohaotili != ''">xiaohaotili = #{xiaohaotili},</if>
+            <if test="kuo1 != null  and kuo1 != ''">kuo1 = #{kuo1},</if>
+            <if test="kuo2 != null  and kuo2 != ''">kuo2 = #{kuo2},</if>
+            <if test="kuo3 != null  and kuo3 != ''">kuo3 = #{kuo3},</if>
+            <if test="kuo4 != null  and kuo4 != ''">kuo4 = #{kuo4},</if>
+            <if test="kuo5 != null  and kuo5 != ''">kuo5 = #{kuo5},</if>
+            <if test="kuo6 != null  and kuo6 != ''">kuo6 = #{kuo6},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteYwMedalJobById" parameterType="String">
+        delete from yw_medal_job where id = #{id}
+    </delete>
+
+    <delete id="deleteYwMedalJobByIds" parameterType="String">
+        delete from yw_medal_job where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

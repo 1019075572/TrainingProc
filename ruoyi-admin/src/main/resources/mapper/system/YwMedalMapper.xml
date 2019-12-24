@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YwMedalMapper">
+
+    <resultMap type="YwMedal" id="YwMedalResult">
+        <result property="id"    column="id"    />
+        <result property="chenghao"    column="chenghao"    />
+        <result property="leibie"    column="leibie"    />
+        <result property="dengji"    column="dengji"    />
+        <result property="biaozhi"    column="biaozhi"    />
+        <result property="tupian"    column="tupian"    />
+        <result property="beizhu"    column="beizhu"    />
+        <result property="fenduankaishi"    column="fenduankaishi"    />
+        <result property="fenduanjieshu"    column="fenduanjieshu"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="beijing"    column="beijing"    />
+        <result property="prcession"    column="prcession"    />
+    </resultMap>
+
+    <sql id="selectYwMedalVo">
+        select ym.id, ym.chenghao, ym.leibie, ym.dengji, ym.biaozhi, ym.tupian, ym.beizhu, ym.fenduankaishi, ym.fenduanjieshu, ym.create_by, ym.create_time, ym.update_by, ym.update_time, ym.remark, ym.del_flag, ym.beijing, mr.tiaozhanjindu  as prcession from yw_medal ym
+        left join yw_medal_record mr  on mr.guishuchenghao = ym.id
+
+
+    </sql>
+
+    <select id="selectYwMedalList" parameterType="YwMedal" resultMap="YwMedalResult">
+        <include refid="selectYwMedalVo"/>
+        <if test="params.userId != null  and params.userId != null  and params.userId != ''"> and mr.tiaozhanzhe = #{params.userId}</if>
+        <where>
+            <if test="chenghao != null  and chenghao != ''"> and ym.chenghao = #{chenghao}</if>
+            <if test="leibie != null  and leibie != ''"> and ym.leibie = #{leibie}</if>
+            <if test="dengji != null  and dengji != ''"> and ym.dengji = #{dengji}</if>
+            <if test="biaozhi != null  and biaozhi != ''"> and ym.biaozhi = #{biaozhi}</if>
+            <if test="tupian != null  and tupian != ''"> and ym.tupian = #{tupian}</if>
+            <if test="beizhu != null  and beizhu != ''"> and ym.beizhu = #{beizhu}</if>
+            <if test="fenduankaishi != null  and fenduankaishi != ''"> and ym.fenduankaishi = #{fenduankaishi}</if>
+            <if test="fenduanjieshu != null  and fenduanjieshu != ''"> and ym.fenduanjieshu = #{fenduanjieshu}</if>
+        </where>
+        order by ym.leibie,ym.dengji,ym.fenduankaishi,ym.fenduanjieshu
+    </select>
+
+    <select id="selectYwMedalById" parameterType="String" resultMap="YwMedalResult">
+        select ym.id, ym.chenghao, ym.leibie, ym.dengji, ym.biaozhi, ym.tupian, ym.beizhu, ym.fenduankaishi, ym.fenduanjieshu, ym.create_by, ym.create_time, ym.update_by, ym.update_time, ym.remark, ym.del_flag, ym.beijing  as prcession from yw_medal ym
+        where ym.id = #{id}
+    </select>
+
+    <insert id="insertYwMedal" parameterType="YwMedal">
+        insert into yw_medal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="chenghao != null  and chenghao != ''">chenghao,</if>
+            <if test="leibie != null  and leibie != ''">leibie,</if>
+            <if test="dengji != null  and dengji != ''">dengji,</if>
+            <if test="biaozhi != null  and biaozhi != ''">biaozhi,</if>
+            <if test="tupian != null  and tupian != ''">tupian,</if>
+            <if test="beizhu != null  and beizhu != ''">beizhu,</if>
+            <if test="fenduankaishi != null  and fenduankaishi != ''">fenduankaishi,</if>
+            <if test="fenduanjieshu != null  and fenduanjieshu != ''">fenduanjieshu,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="beijing != null  and beijing != ''">beijing,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="chenghao != null  and chenghao != ''">#{chenghao},</if>
+            <if test="leibie != null  and leibie != ''">#{leibie},</if>
+            <if test="dengji != null  and dengji != ''">#{dengji},</if>
+            <if test="biaozhi != null  and biaozhi != ''">#{biaozhi},</if>
+            <if test="tupian != null  and tupian != ''">#{tupian},</if>
+            <if test="beizhu != null  and beizhu != ''">#{beizhu},</if>
+            <if test="fenduankaishi != null  and fenduankaishi != ''">#{fenduankaishi},</if>
+            <if test="fenduanjieshu != null  and fenduanjieshu != ''">#{fenduanjieshu},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="beijing != null  and beijing != ''">#{beijing},</if>
+         </trim>
+    </insert>
+
+    <update id="updateYwMedal" parameterType="YwMedal">
+        update yw_medal
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="chenghao != null  and chenghao != ''">chenghao = #{chenghao},</if>
+            <if test="leibie != null  and leibie != ''">leibie = #{leibie},</if>
+            <if test="dengji != null  and dengji != ''">dengji = #{dengji},</if>
+            <if test="biaozhi != null  and biaozhi != ''">biaozhi = #{biaozhi},</if>
+            <if test="tupian != null  and tupian != ''">tupian = #{tupian},</if>
+            <if test="beizhu != null  and beizhu != ''">beizhu = #{beizhu},</if>
+            <if test="fenduankaishi != null  and fenduankaishi != ''">fenduankaishi = #{fenduankaishi},</if>
+            <if test="fenduanjieshu != null  and fenduanjieshu != ''">fenduanjieshu = #{fenduanjieshu},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="beijing != null  and beijing != ''">beijing = #{beijing},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteYwMedalById" parameterType="String">
+        delete from yw_medal where id = #{id}
+    </delete>
+
+    <delete id="deleteYwMedalByIds" parameterType="String">
+        delete from yw_medal where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

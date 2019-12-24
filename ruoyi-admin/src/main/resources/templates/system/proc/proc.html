@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('实训攻略列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="menu-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            攻略名称：<input type="text" name="menuName"/>
+                        </li>
+                        <li>
+                            攻略状态：<select name="finishState" th:with="type=${@dict.getType('sys_proc_finish')}">
+                            <option value="">所有</option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add(0)" shiro:hasPermission="system:proc:add">
+                <i class="fa fa-plus"></i> 新增
+            </a>
+            <a class="btn btn-primary" onclick="$.operate.edit()" shiro:hasPermission="system:proc:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-info" id="expandAllBtn">
+                <i class="fa fa-exchange"></i> 展开/折叠
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-tree-table"></table>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var addFlag = [[${@permission.hasPermi('system:proc:add')}]];
+    var editFlag = [[${@permission.hasPermi('system:proc:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:proc:remove')}]];
+    var receiveFlag = [[${@permission.hasPermi('system:proc:receive')}]];
+    var finishFlag = [[${@permission.hasPermi('system:proc:finish')}]];
+    var repeatFlag = [[${@permission.hasPermi('system:proc:repeat')}]];
+    var datas = [[${@dict.getType('sys_proc_finish')}]];
+    var skills = [[${@dict.getType('sys_skill_sign')}]];
+    var prefix = ctx + "system/proc";
+
+    $(function() {
+        var options = {
+            code: "menuId",
+            parentCode: "parentId",
+            uniqueId: "menuId",
+            expandAll: true,
+            expandFirst: false,
+            url: prefix + "/list",
+            createUrl: prefix + "/add/{id}",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove/{id}",
+            receiveUrl: prefix + "/receive/{id}",
+            finishUrl: prefix + "/finish/{id}",
+            showRemarkUrl: prefix + "/showRemark/{id}",
+            repeatUrl: prefix + "/repeat/{id}",
+            modalName: "攻略",
+            columns: [{
+                field: 'selectItem',
+                radio: true
+            },
+                {
+                    title: '流程名称',
+                    field: 'menuName',
+                    width: '20%',
+                    formatter: function(value, row, index) {
+                        if ($.common.isEmpty(row.icon)) {
+                            return row.menuName;
+                        } else {
+                            return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.menuName + '</span>';
+                        }
+                    }
+                },
+                {
+                    field: 'orderNum',
+                    title: '排序',
+                    width: '10%',
+                    align: "left"
+                },
+                {
+                    field: 'ex2',
+                    title: '分值',
+                    width: '10%',
+                    align: "left"
+                },
+                {
+                    field: 'remark',
+                    title: '内容',
+                    width: '20%',
+                    align: "left"
+                },
+                {
+                    field: 'url',
+                    title: '链接',
+                    width: '8%',
+                    align: "left",
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if(row.url !=''){
+
+                            if(row.target =='menuBlank'){
+                                actions.push('<a target="_blank" class="btn btn-success btn-xs " href="'+row.url+'" ><i class="fa fa-key"></i></a> ');
+                            }else{
+                                actions.push('<a class="btn btn-success btn-xs "  onclick="$.modal.openTab(\''+row.menuName+'\', \''+row.url+'\');"><i class="fa fa-hand-pointer-o"></i></a> ');
+                            }
+                        }
+                        return actions.join('');
+                    }
+                },
+                {
+                    title: '类型',
+                    field: 'menuType',
+                    width: '10%',
+                    align: "left",
+                    formatter: function(value, item, index) {
+                        if (item.menuType == 'M') {
+                            return '<span class="label label-success">任务</span>';
+                        }
+                        else if (item.menuType == 'C') {
+                            return '<span class="label label-primary">攻略</span>';
+                        }
+                        else if (item.menuType == 'F') {
+                            return '<span class="label label-warning">心法</span>';
+                        }
+                    }
+                },
+                {
+                    field: 'finishState',
+                    title: '完成情况',
+                    width: '10%',
+                    align: "left",
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(datas, row.finishState);
+                    }
+                },
+                {
+                    field: 'perms',
+                    title: '属性标签',
+                    width: '15%',
+                    align: "left",
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(skills, row.perms);
+                    }
+                },
+                {
+                    title: '操作',
+                    width: '20%',
+                    align: "left",
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.menuId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-info btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="$.operate.add(\'' + row.menuId + '\')"><i class="fa fa-plus"></i>新增</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.menuId + '\')"><i class="fa fa-trash"></i>删除</a>');
+
+
+                        if(row.ex2 !='' && row.finishState == '0'){
+                            actions.push('<a class="btn btn-primary btn-xs ' + receiveFlag + '" href="javascript:void(0)" onclick="receive(\'' + row.menuId + '\')"><i class="fa fa-play"></i>领取</a>');
+                        }
+                        if(row.ex2 !='' && row.finishState == '1'){
+                            actions.push('<a class="btn btn-warning btn-xs ' + finishFlag + '" href="javascript:void(0)" onclick="finish(\'' + row.menuId + '\')"><i class="fa fa-check"></i>完成</a>');
+                        }
+                        if(row.ex2 !='' && row.finishState == '2'){
+                            actions.push('<a class="btn btn-danger btn-xs ' + repeatFlag + '" href="javascript:void(0)" onclick="repeat(\'' + row.menuId + '\')"><i class="fa fa-recycle"></i>重做</a>');
+                        }
+
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.treeTable.init(options);
+    });
+</script>
+<script>
+    function receive(id) {
+        $.modal.confirm("确定领取该条" + $.table._option.modalName + "吗？", function() {
+            var url = $.common.isEmpty(id) ? $.table._option.receiveUrl : $.table._option.receiveUrl.replace("{id}", id);
+            if($.table._option.type == table_type.bootstrapTreeTable) {
+                $.operate.get(url);
+            } else {
+                var data = { "ids": id };
+                $.operate.submit(url, "post", "json", data);
+            }
+        });
+    }
+
+    function finish(id) {
+        $.modal.confirm("确定完成该条" + $.table._option.modalName + "吗？", function() {
+            var url = $.common.isEmpty(id) ? $.table._option.finishUrl : $.table._option.finishUrl.replace("{id}", id);
+            if($.table._option.type == table_type.bootstrapTreeTable) {
+                // $.operate.get(url);
+                $.modal.open("填写完成内容", url);
+            } else {
+                var data = { "ids": id };
+                $.operate.submit(url, "post", "json", data);
+            }
+        });
+    }
+    function repeat(id) {
+        $.modal.confirm("确定重做该条" + $.table._option.modalName + "吗？", function() {
+            var url = $.common.isEmpty(id) ? $.table._option.repeatUrl : $.table._option.repeatUrl.replace("{id}", id);
+            if($.table._option.type == table_type.bootstrapTreeTable) {
+                $.operate.get(url);
+            } else {
+                var data = { "ids": id };
+                $.operate.submit(url, "post", "json", data);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
